@@ -5,6 +5,9 @@ export interface InputConstructor {
   id: string;
   email: string;
   password: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 export interface InputCreate {
@@ -16,11 +19,24 @@ export class User {
   private id: string;
   private email: string;
   private password: string;
+  private createdAt?: Date;
+  private updatedAt?: Date;
+  private deletedAt?: Date;
 
-  constructor({ id, email, password }: InputConstructor) {
+  constructor({
+    id,
+    email,
+    password,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  }: InputConstructor) {
     this.id = id;
     this.email = email;
     this.password = password;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.deletedAt = deletedAt;
   }
 
   public static create({ email, password }: InputCreate): User {
@@ -63,5 +79,21 @@ export class User {
 
   public setPassword(password: string): void {
     this.password = password;
+  }
+
+  public getCreatedAt(): Date | undefined {
+    return this.createdAt;
+  }
+
+  public getUpdatedAt(): Date | undefined {
+    return this.updatedAt;
+  }
+
+  public setUpdatedAt(updatedAt: Date): void {
+    this.updatedAt = updatedAt;
+  }
+
+  public getDeletedAt(): Date | undefined {
+    return this.deletedAt;
   }
 }
