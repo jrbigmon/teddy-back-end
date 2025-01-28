@@ -69,4 +69,18 @@ describe('UrlEntity', () => {
       });
     }).toThrow('Short URL is required');
   });
+
+  it('should be create some url shorts and theses not matching', () => {
+    const originalUrl1 = 'http://example.com/1';
+    const originalUrl2 = 'http://example.com/2';
+    const originalUrl3 = 'http://example.com/3';
+
+    const urlShortener1 = Url.generateShortUrl(originalUrl1);
+    const urlShortener2 = Url.generateShortUrl(originalUrl2);
+    const urlShortener3 = Url.generateShortUrl(originalUrl3);
+
+    expect(urlShortener1).not.toBe(urlShortener2);
+    expect(urlShortener2).not.toBe(urlShortener3);
+    expect(urlShortener1).not.toBe(urlShortener3);
+  });
 });
