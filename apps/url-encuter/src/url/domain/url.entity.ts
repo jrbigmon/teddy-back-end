@@ -1,12 +1,14 @@
 import { createHash } from 'node:crypto';
 import { genUUID } from '../../../../@share/utils/genUUID';
 import { Entity } from '../../../../@share/entity/entity';
+import { Click } from './clicks.entity';
 
 export interface InputConstructor {
   id: string;
   originalUrl: string;
   shortUrl: string;
   userId?: string;
+  clicks?: Click[];
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
@@ -23,6 +25,7 @@ export class Url implements Entity {
   private originalUrl: string;
   private shortUrl: string;
   private userId?: string;
+  private clicks: Array<Click>;
   private createdAt?: Date;
   private updatedAt?: Date;
   private deletedAt?: Date;
@@ -32,6 +35,7 @@ export class Url implements Entity {
     originalUrl,
     shortUrl,
     userId,
+    clicks,
     createdAt,
     updatedAt,
     deletedAt,
@@ -40,6 +44,7 @@ export class Url implements Entity {
     this.originalUrl = originalUrl;
     this.shortUrl = shortUrl;
     this.userId = userId;
+    this.clicks = clicks || [];
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.deletedAt = deletedAt;
@@ -82,6 +87,12 @@ export class Url implements Entity {
     return hash.slice(0, 6);
   }
 
+  public click(userId?: string) {
+    const click = Click.create({ urlId: this.getId(), userId: userId });
+
+    this.clicks.push(click);
+  }
+
   public getId(): string {
     return this.id;
   }
@@ -95,6 +106,10 @@ export class Url implements Entity {
 
   public getUserId(): string | undefined {
     return this.userId;
+  }
+
+  public getClicks(): Array<Click> {
+    return this.clicks;
   }
 
   public getCreatedAt(): Date | undefined {
