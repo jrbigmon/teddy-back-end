@@ -1,9 +1,11 @@
 import { Url } from './url.entity';
 
 describe('UrlEntity', () => {
+  const serverUrl = 'http://localhost:3000';
+
   it('should be create a short url', () => {
     const originalUrl = 'https://www.example.com';
-    const shortUrl = Url.generateShortUrl(originalUrl);
+    const shortUrl = Url.generateShortUrl(originalUrl, serverUrl);
 
     expect(shortUrl).toBeDefined();
     expect(shortUrl.length).toBeGreaterThanOrEqual(6);
@@ -15,7 +17,7 @@ describe('UrlEntity', () => {
     const url = Url.create({
       originalUrl,
       userId: 'testUserId',
-      shortUrl: Url.generateShortUrl(originalUrl),
+      shortUrl: Url.generateShortUrl(originalUrl, serverUrl),
     });
 
     expect(url).toMatchObject({
@@ -29,7 +31,7 @@ describe('UrlEntity', () => {
     const url = Url.create({
       originalUrl: 'https://www.example.com',
       userId: 'testUserId',
-      shortUrl: Url.generateShortUrl('https://www.example.com'),
+      shortUrl: Url.generateShortUrl('https://www.example.com', serverUrl),
     });
 
     url.click('testClickUserId');
@@ -75,9 +77,9 @@ describe('UrlEntity', () => {
     const originalUrl2 = 'http://example.com/2';
     const originalUrl3 = 'http://example.com/3';
 
-    const urlShortener1 = Url.generateShortUrl(originalUrl1);
-    const urlShortener2 = Url.generateShortUrl(originalUrl2);
-    const urlShortener3 = Url.generateShortUrl(originalUrl3);
+    const urlShortener1 = Url.generateShortUrl(originalUrl1, serverUrl);
+    const urlShortener2 = Url.generateShortUrl(originalUrl2, serverUrl);
+    const urlShortener3 = Url.generateShortUrl(originalUrl3, serverUrl);
 
     expect(urlShortener1).not.toBe(urlShortener2);
     expect(urlShortener2).not.toBe(urlShortener3);

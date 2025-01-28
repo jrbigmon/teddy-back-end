@@ -82,9 +82,9 @@ export class Url implements Entity {
     }
   }
 
-  public static generateShortUrl(url: string): string {
+  public static generateShortUrl(url: string, serverUrl: string): string {
     const hash = createHash('sha256').update(url).digest('hex');
-    return hash.slice(0, 6);
+    return `${serverUrl}/${hash.slice(0, 6)}`;
   }
 
   public click(userId?: string) {
