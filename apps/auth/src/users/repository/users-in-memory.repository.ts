@@ -12,4 +12,11 @@ export class UserInMemoryRepository implements UserRepositoryInterface {
   public async get(id: string, _: Transaction): Promise<User> {
     return this.users.find((user) => user.getId() === id);
   }
+
+  public async getByEmail(
+    email: string,
+    transaction?: Transaction,
+  ): Promise<User> {
+    return this.users.find((user) => user.getEmail() === email);
+  }
 }

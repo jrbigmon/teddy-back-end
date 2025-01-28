@@ -1,11 +1,24 @@
+import { HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
+import { InvalidDataException } from './invalid-data.expcetion';
+import { UnauthorizedException } from './unauthorized.expcetion';
 
 export function handleException(error: Error, response: Response): Response {
   console.error(error);
 
-  if (error.name === 'InvalidDataException') {
-    return response.status(400).json({ message: error.message });
+  if (error.name === InvalidDataException.name) {
+    return response
+      .status(HttpStatus.BAD_REQUEST)
+      .json({ message: error.message });
   }
 
-  return response.status(500).json({ message: 'Internal Server Error' });
+  if (error.name === UnauthorizedException.name) {
+    return response
+      .status(HttpStatus.UNAUTHORIZED)
+      .json({ message: error.message });
+  }
+
+  return response
+    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+    .json({ message: 'Internal Server Error' });
 }

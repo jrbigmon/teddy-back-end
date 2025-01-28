@@ -46,4 +46,28 @@ export class UserRepository implements UserRepositoryInterface {
       deletedAt,
     });
   }
+
+  public async getByEmail(
+    email: string,
+    transaction?: Transaction,
+  ): Promise<User> {
+    if (!email) return null;
+
+    const user = await this.model.findOne({ where: { email }, transaction });
+
+    if (!user) return null;
+
+    const { id, name, password, createdAt, updatedAt, deletedAt } =
+      user.toJSON();
+
+    return new User({
+      id,
+      name,
+      email,
+      password,
+      createdAt,
+      updatedAt,
+      deletedAt,
+    });
+  }
 }

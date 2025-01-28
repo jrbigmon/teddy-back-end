@@ -7,6 +7,8 @@ import { Dialect } from 'sequelize';
 export const models = [UserModel];
 export const modelsModule = SequelizeModule.forFeature(models);
 
+const isTestEnvironment = process.env.NODE_ENV === 'test';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -17,6 +19,8 @@ export const modelsModule = SequelizeModule.forFeature(models);
       username: process.env.AUTH_DATABASE_USER,
       password: process.env.AUTH_DATABASE_PASSWORD,
       database: process.env.AUTH_DATABASE_NAME,
+      autoLoadModels: isTestEnvironment,
+      synchronize: isTestEnvironment,
       models,
     }),
   ],

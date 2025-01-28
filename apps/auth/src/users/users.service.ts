@@ -30,4 +30,11 @@ export class UserService {
       createdAt: user.getCreatedAt(),
     };
   }
+
+  public async getByEmail(
+    email: string,
+    transaction?: Transaction,
+  ): Promise<User | null> {
+    return this.repository.getByEmail(email, transaction);
+  }
 }
