@@ -1,3 +1,4 @@
+import { Entity } from '../../../../@share/entity/entity';
 import { InvalidDataException } from '../../../../@share/exceptions/invalid-data.expcetion';
 import { genUUID } from '../../../../@share/utils/genUUID';
 
@@ -17,7 +18,7 @@ export interface InputCreate {
   password: string;
 }
 
-export class User {
+export class User implements Entity {
   private id: string;
   private name: string;
   private email: string;
