@@ -12,17 +12,25 @@ export class LoginService {
     private readonly jwtService: JwtService,
   ) {}
 
+  private unauthorizedError() {
+    throw new UnauthorizedException('Unauthorized');
+  }
+
   public async login(input: LoginInputDTO): Promise<LoginOutputDTO> {
-    const { email, password } = input;
+    const { email, password } = input || {};
+
+    if (!email || !password) {
+      this.unauthorizedError();
+    }
 
     const user = await this.userService.getByEmail(email);
 
     if (!user) {
-      throw new UnauthorizedException('Unauthorized');
+      this.unauthorizedError();
     }
 
     if (!(await comparePassword(password, user.getPassword()))) {
-      throw new UnauthorizedException('Unauthorized');
+      this.unauthorizedError();
     }
 
     const payload = { id: user.getId(), email: user.getEmail() };
