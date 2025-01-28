@@ -3,6 +3,7 @@ import { genUUID } from '../../../../@share/utils/genUUID';
 
 export interface InputConstructor {
   id: string;
+  name: string;
   email: string;
   password: string;
   createdAt?: Date;
@@ -11,12 +12,14 @@ export interface InputConstructor {
 }
 
 export interface InputCreate {
+  name: string;
   email: string;
   password: string;
 }
 
 export class User {
   private id: string;
+  private name: string;
   private email: string;
   private password: string;
   private createdAt?: Date;
@@ -26,12 +29,14 @@ export class User {
   constructor({
     id,
     email,
+    name,
     password,
     createdAt,
     updatedAt,
     deletedAt,
   }: InputConstructor) {
     this.id = id;
+    this.name = name;
     this.email = email;
     this.password = password;
     this.createdAt = createdAt;
@@ -39,8 +44,16 @@ export class User {
     this.deletedAt = deletedAt;
   }
 
-  public static create({ email, password }: InputCreate): User {
-    const user = new User({ id: genUUID(), email, password });
+  public static create({ name, email, password }: InputCreate): User {
+    const currentDate = new Date();
+    const user = new User({
+      id: genUUID(),
+      name,
+      email,
+      password,
+      createdAt: currentDate,
+      updatedAt: currentDate,
+    });
 
     user.isValid();
 
@@ -50,6 +63,10 @@ export class User {
   public isValid() {
     if (!this.id) {
       throw new InvalidDataException('Id is required');
+    }
+
+    if (!this.name) {
+      throw new InvalidDataException('Name is required');
     }
 
     if (!this.email) {
@@ -63,6 +80,14 @@ export class User {
 
   public getId(): string {
     return this.id;
+  }
+
+  public getName(): string {
+    return this.name;
+  }
+
+  public setName(name: string): void {
+    this.name = name;
   }
 
   public getEmail(): string {
