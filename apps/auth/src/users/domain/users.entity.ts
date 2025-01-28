@@ -1,4 +1,4 @@
-import { InvalidDataException } from '../../../../@share/exceptions/InvalidDataException';
+import { InvalidDataException } from '../../../../@share/exceptions/invalid-data.expcetion';
 import { genUUID } from '../../../../@share/utils/genUUID';
 
 export interface InputConstructor {

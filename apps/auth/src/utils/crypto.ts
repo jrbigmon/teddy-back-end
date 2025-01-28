@@ -1,5 +1,5 @@
 import { hash, compare } from 'bcrypt';
-import { InvalidDataException } from '../../../@share/exceptions/InvalidDataException';
+import { InvalidDataException } from '../../../@share/exceptions/invalid-data.expcetion';
 
 export async function encryptPassword(password: string): Promise<string> {
   const salt = 10;
