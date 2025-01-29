@@ -9,6 +9,7 @@ import {
   Query,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { UrlService } from './url.service';
 import { Request, Response } from 'express';
@@ -17,6 +18,8 @@ import { getBaseUrl } from '../utils/getBaseUrl';
 import { handleException } from '../../../@share/exceptions/handle.exception';
 import { Sequelize } from 'sequelize-typescript';
 import { Sort } from '../../../@share/enums/sort.enum';
+import { AuthGuard } from '../../../@share/auth-guard/auth-guard';
+import { getDecodedUser } from '../../../@share/utils/getDecodedUser';
 
 @Controller('api/urls')
 export class UrlController {
@@ -34,11 +37,13 @@ export class UrlController {
     const transaction = await this.sequelize.transaction();
 
     try {
+      const userDecoded = getDecodedUser(request);
+
       const result = await this.service.urlShortener(
         {
           url: body?.url,
           serverUrl: getBaseUrl(request),
-          userId: null,
+          userId: userDecoded?.id ?? null,
         },
         transaction,
       );
@@ -54,6 +59,7 @@ export class UrlController {
   }
 
   @Put(':id')
+  @UseGuards(AuthGuard)
   public async update(
     @Param('id') id: string,
     @Body() body: Pick<UrlShortenerInputDTO, 'url'>,
@@ -63,11 +69,13 @@ export class UrlController {
     const transaction = await this.sequelize.transaction();
 
     try {
+      const userDecoded = getDecodedUser(request);
+
       const result = await this.service.update(
         {
           id,
           url: body?.url,
-          userId: null,
+          userId: userDecoded?.id ?? null,
           serverUrl: getBaseUrl(request),
         },
         transaction,
@@ -91,8 +99,10 @@ export class UrlController {
   ) {
     const { page, pageSize } = query;
     try {
+      const userDecoded = getDecodedUser(request);
+
       const result = await this.service.list({
-        userId: null,
+        userId: userDecoded?.id ?? null,
         page,
         pageSize,
         baseUrl: `${getBaseUrl(request)}/api/urls`,
@@ -105,11 +115,17 @@ export class UrlController {
   }
 
   @Get(':id')
-  public async get(@Param('id') id: string, @Res() response: Response) {
+  public async get(
+    @Param('id') id: string,
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
     try {
+      const userDecoded = getDecodedUser(request);
+
       const result = await this.service.get({
         id,
-        userId: null,
+        userId: userDecoded?.id ?? null,
       });
 
       return response.status(HttpStatus.OK).json(result);

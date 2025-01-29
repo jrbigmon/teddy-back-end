@@ -1,6 +1,7 @@
 import { Transaction } from 'sequelize';
 import { Url } from '../domain/url.entity';
 import {
+  GetOneInput,
   ListInput,
   ListOutput,
   UrlRepositoryInterface,
@@ -59,5 +60,27 @@ export class UrlInMemoryRepository implements UrlRepositoryInterface {
       sort: Sort.DESC,
       pageSize: 1,
     };
+  }
+
+  async getOne(input: Partial<GetOneInput>): Promise<Url> {
+    const { id, originalUrl, shortUrl, userId } = input;
+
+    if (id) {
+      return this.get(id);
+    }
+
+    if (originalUrl) {
+      return this.findOneByOriginalUrl(originalUrl);
+    }
+
+    if (shortUrl) {
+      return this.findOneByShortUrl(shortUrl);
+    }
+
+    if (userId) {
+      return this.urls.find((url) => url.getUserId() === userId);
+    }
+
+    return null;
   }
 }
