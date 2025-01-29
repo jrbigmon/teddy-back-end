@@ -79,7 +79,10 @@ export class UrlService {
     };
   }
 
-  public async delete(input: UrlDeleteInputDTO): Promise<UrlDeleteOutputDTO> {
+  public async delete(
+    input: UrlDeleteInputDTO,
+    transaction?: Transaction,
+  ): Promise<UrlDeleteOutputDTO> {
     const { id, userId } = input;
 
     const urlEntity = await this.repository.get(id);
@@ -92,7 +95,7 @@ export class UrlService {
 
     urlEntity.deleted();
 
-    await this.repository.save(urlEntity);
+    await this.repository.save(urlEntity, transaction);
   }
 
   public async clicking(

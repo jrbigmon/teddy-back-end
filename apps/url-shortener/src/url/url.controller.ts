@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -79,6 +80,36 @@ export class UrlController {
           url: body?.url,
           userId: userDecoded?.id ?? null,
           serverUrl: getBaseUrl(request),
+        },
+        transaction,
+      );
+
+      await transaction.commit();
+
+      return response.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      await transaction.rollback();
+
+      return handleException(error, response);
+    }
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard, DecodeJwt)
+  public async delete(
+    @Param('id') id: string,
+    @Res() response: Response,
+    @Req() request: Request,
+  ) {
+    const transaction = await this.sequelize.transaction();
+
+    try {
+      const userDecoded = getDecodedUser(request);
+
+      const result = await this.service.delete(
+        {
+          id,
+          userId: userDecoded?.id ?? null,
         },
         transaction,
       );
