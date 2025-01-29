@@ -25,6 +25,8 @@ describe('UrlEntity', () => {
       userId: 'testUserId',
       shortUrl: expect.any(String),
     });
+
+    expect(url.getShortUrl().startsWith(serverUrl)).toBeTruthy();
   });
 
   it('should be save the click when is clicked in the url', () => {
