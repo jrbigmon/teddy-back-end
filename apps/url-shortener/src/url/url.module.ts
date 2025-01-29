@@ -1,18 +1,20 @@
 import { Module, Provider } from '@nestjs/common';
 import { UrlService } from './url.service';
-import { UrlInMemoryRepository } from './repository/url-in-memory.repository';
 import { UrlController } from './url.controller';
+import { DatabaseModule, modelsModule } from '../database/database.module';
+import { UrlRepository } from './repository/url-repository';
 
 const services: Provider[] = [
   UrlService,
+  UrlRepository,
   {
     provide: 'URL_REPOSITORY',
-    useValue: new UrlInMemoryRepository(),
+    useClass: UrlRepository,
   },
 ];
 
 @Module({
-  imports: [],
+  imports: [DatabaseModule, modelsModule],
   controllers: [UrlController],
   providers: services,
   exports: services,

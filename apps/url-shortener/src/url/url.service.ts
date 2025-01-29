@@ -34,7 +34,7 @@ export class UrlService {
 
     const urlEntity = Url.create({ originalUrl, userId, shortUrl });
 
-    await this.repository.save(urlEntity, transaction);
+    await this.repository.create(urlEntity, transaction);
 
     return {
       id: urlEntity.getId(),

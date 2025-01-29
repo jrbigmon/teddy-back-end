@@ -23,14 +23,25 @@ export class UrlInMemoryRepository implements UrlRepositoryInterface {
     return this.urls.find((url) => url.getOriginalUrl() === originalUrl);
   }
 
-  public async save(url: Url, _?: Transaction): Promise<void> {
+  public async create(url: Url, _?: Transaction): Promise<void> {
+    this.urls.push(url);
+  }
+
+  public async update(url: Url, _?: Transaction): Promise<void> {
     const urlIndex = this.urls.findIndex((url) => url.getId() === url.getId());
 
     if (urlIndex !== -1) {
       this.urls[urlIndex] = url;
       return;
     }
+  }
 
-    this.urls.push(url);
+  public async addClicks(url: Url, _?: Transaction): Promise<void> {
+    const urlIndex = this.urls.findIndex((url) => url.getId() === url.getId());
+
+    if (urlIndex !== -1) {
+      this.urls[urlIndex] = url;
+      return;
+    }
   }
 }
