@@ -54,11 +54,16 @@ export class UrlController {
   public async list(
     @Query() query: { page?: number; pageSize?: number; sort?: Sort },
     @Res() response: Response,
+    @Req() request: Request,
   ) {
-    const { page = 1, pageSize = 10 } = query;
-    const { userId } = { userId: '123' };
+    const { page, pageSize } = query;
     try {
-      const result = await this.service.list({ userId, page, pageSize });
+      const result = await this.service.list({
+        userId: null,
+        page,
+        pageSize,
+        baseUrl: `${getBaseUrl(request)}/api/urls`,
+      });
 
       return response.status(HttpStatus.OK).json(result);
     } catch (error) {

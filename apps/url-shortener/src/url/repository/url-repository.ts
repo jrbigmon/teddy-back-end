@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { UrlRepositoryInterface } from './url.repository.interface';
+import {
+  ListInput,
+  ListOutput,
+  UrlRepositoryInterface,
+} from './url.repository.interface';
 import { InjectModel } from '@nestjs/sequelize';
 import UrlModel from '../model/urls.model';
-import { Sequelize, Transaction } from 'sequelize';
+import { FindAttributeOptions, Sequelize, Transaction } from 'sequelize';
 import { Url } from '../domain/url.entity';
 import ClickModel from '../model/clicks.model';
 import { Sort } from '../../../../@share/enums/sort.enum';
 import { getPagination } from '../../../../@share/utils/getPagination';
+import {
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
+} from '../../../../@share/constants/pagination';
 
 @Injectable()
 export class UrlRepository implements UrlRepositoryInterface {
@@ -107,46 +115,39 @@ export class UrlRepository implements UrlRepositoryInterface {
     return new Url({ ...url.toJSON(), clicks: [] });
   }
 
-  public async list(input: {
-    userId: number;
-    page?: number;
-    pageSize?: number;
-    sort?: Sort;
-    countOfClick?: boolean;
-  }): Promise<{
-    count: number;
-    totalPages: number;
-    currentPage: number;
-    sort: Sort;
-    rows: Url[];
-  }> {
+  public async list(input: ListInput): Promise<ListOutput> {
     const {
       userId,
-      page = 1,
-      pageSize = 10,
+      page = DEFAULT_PAGE,
+      pageSize = DEFAULT_PAGE_SIZE,
       sort = Sort.DESC,
       countOfClick = true,
     } = input;
 
     const whereFilter = userId ? { userId } : {};
 
+    const defaultAttributes: FindAttributeOptions = [
+      'id',
+      'originalUrl',
+      'shortUrl',
+      'userId',
+      'createdAt',
+      'updatedAt',
+      'deletedAt',
+    ];
+
+    if (countOfClick) {
+      defaultAttributes.push([
+        Sequelize.literal(
+          '(SELECT COUNT(*) FROM "clicks" WHERE "clicks"."url_id" = "UrlModel"."id")',
+        ),
+        'clickCount',
+      ]);
+    }
+
     const { rows, count } = await this.model.findAndCountAll({
       where: whereFilter,
-      attributes: [
-        'id',
-        'originalUrl',
-        'shortUrl',
-        'userId',
-        'createdAt',
-        'updatedAt',
-        'deletedAt',
-        countOfClick && [
-          Sequelize.literal(
-            '(SELECT COUNT(*) FROM "clicks" WHERE "clicks"."url_id" = "UrlModel"."id")',
-          ),
-          'clickCount',
-        ],
-      ],
+      attributes: defaultAttributes,
       limit: pageSize,
       offset: getPagination({ page, pageSize }),
       order: [['createdAt', sort]],
@@ -155,7 +156,8 @@ export class UrlRepository implements UrlRepositoryInterface {
     return {
       count,
       totalPages: Math.ceil(count / pageSize),
-      currentPage: page,
+      page,
+      pageSize,
       sort,
       rows: rows.map((row) => {
         const urlJSON = row.toJSON();

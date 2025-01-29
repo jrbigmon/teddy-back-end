@@ -9,6 +9,9 @@ import {
 } from './dto/url-shortener.dto';
 import { NotFoundException } from '../../../@share/exceptions/not-found.exception';
 import { ClickingInputDTO, ClickingOutputDTO } from './dto/clicking.dto';
+import { Sort } from '../../../@share/enums/sort.enum';
+import { ListInputDTO, ListOutputDTO } from './dto/list.dto';
+import { getNextPage, getPrevPage } from '../../../@share/utils/getPagination';
 
 @Injectable()
 export class UrlService {
@@ -68,14 +71,40 @@ export class UrlService {
     };
   }
 
-  public async list({ userId, page, pageSize }): Promise<any> {
-    const data = await this.repository.list({
-      userId,
-      page,
-      pageSize,
-      countOfClick: !!userId,
+  public async list(input: ListInputDTO): Promise<ListOutputDTO> {
+    const { userId, baseUrl } = input;
+
+    const { count, page, rows, sort, totalPages, pageSize } =
+      await this.repository.list({
+        userId: userId,
+        page: input?.page,
+        pageSize: input?.pageSize,
+        sort: input?.sort || Sort.DESC,
+        countOfClick: !!userId,
+      });
+
+    const data = rows?.map((row) => {
+      return {
+        id: row.getId(),
+        originalUrl: row.getOriginalUrl(),
+        shortUrl: row.getShortUrl(),
+        clickCount: userId ? row.getClickCount() : null,
+        createdAt: row.getCreatedAt(),
+        updatedAt: row.getUpdatedAt(),
+        _infoPage: `${baseUrl}/${row.getId()}`,
+        _clicksPage: `${baseUrl}/${row.getId()}/clicks`,
+      };
     });
 
-    return data;
+    return {
+      count,
+      totalPages,
+      page,
+      pageSize,
+      sort,
+      _nextPage: getNextPage({ page, totalPages, baseUrl, pageSize }),
+      _prevPage: getPrevPage({ page, baseUrl, pageSize }),
+      data,
+    };
   }
 }

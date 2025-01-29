@@ -1,6 +1,10 @@
 import { Transaction } from 'sequelize';
 import { Url } from '../domain/url.entity';
-import { UrlRepositoryInterface } from './url.repository.interface';
+import {
+  ListInput,
+  ListOutput,
+  UrlRepositoryInterface,
+} from './url.repository.interface';
 import { Sort } from '../../../../@share/enums/sort.enum';
 
 export class UrlInMemoryRepository implements UrlRepositoryInterface {
@@ -46,23 +50,14 @@ export class UrlInMemoryRepository implements UrlRepositoryInterface {
     }
   }
 
-  public async list(_input: {
-    userId: number;
-    page?: number;
-    pageSize?: number;
-  }): Promise<{
-    count: number;
-    totalPages: number;
-    currentPage: number;
-    sort: Sort;
-    rows: Url[];
-  }> {
+  public async list(_input: ListInput): Promise<ListOutput> {
     return {
       rows: this.urls,
       count: this.urls.length,
       totalPages: 1,
-      currentPage: 1,
+      page: 1,
       sort: Sort.DESC,
+      pageSize: 1,
     };
   }
 }
