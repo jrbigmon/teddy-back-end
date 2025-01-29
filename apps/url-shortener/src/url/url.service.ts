@@ -14,7 +14,7 @@ import { UrlListInputDTO, UrlListOutputDTO } from './dto/url-list.dto';
 import { getNextPage, getPrevPage } from '../../../@share/utils/getPagination';
 import { UrlGetInputDTO, UrlGetOutputDTO } from './dto/url-get-dto';
 import { UrlUpdateInputDTO, UrlUpdateOutputDTO } from './dto/url-update.dto';
-import { UnauthorizedException } from '../../../@share/exceptions/unauthorized.expcetion';
+import { UnauthorizedException } from '../../../@share/exceptions/unauthorized.exception';
 import { UrlDeleteInputDTO, UrlDeleteOutputDTO } from './dto/url-delete.dto';
 
 @Injectable()

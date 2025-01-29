@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UnauthorizedException } from '../../../@share/exceptions/unauthorized.expcetion';
+import { UnauthorizedException } from '../../../@share/exceptions/unauthorized.exception';
 import { comparePassword } from '../utils/crypto';
 import { UserService } from '../users/users.service';
 import { LoginInputDTO, LoginOutputDTO } from './dto/login.dto';

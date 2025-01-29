@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
 import { InvalidDataException } from './invalid-data.expcetion';
-import { UnauthorizedException } from './unauthorized.expcetion';
+import { UnauthorizedException } from './unauthorized.exception';
 import { DataAlreadySavedException } from './data-already-saved.exception';
 import { NotFoundException } from './not-found.exception';
 
