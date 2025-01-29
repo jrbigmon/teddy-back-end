@@ -17,6 +17,7 @@ export interface UrlRepositoryInterface {
     page?: number;
     pageSize?: number;
     sort?: Sort;
+    countOfClick?: boolean;
   }): Promise<{
     count: number;
     totalPages: number;

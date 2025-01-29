@@ -16,7 +16,7 @@ import ClickModel from './clicks.model';
 export default class UrlModel extends Model<UrlModel> {
   @PrimaryKey
   @Column
-  id: string;
+  public id: string;
 
   @Column({ field: 'original_url' })
   public originalUrl: string;

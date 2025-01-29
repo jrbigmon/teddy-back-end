@@ -23,7 +23,7 @@ const isTestEnvironment = process.env.NODE_ENV === 'test';
       autoLoadModels: isTestEnvironment,
       synchronize: isTestEnvironment,
       models,
-      logging: false,
+      logging: true,
     }),
   ],
 })

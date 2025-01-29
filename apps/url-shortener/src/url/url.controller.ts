@@ -1,10 +1,20 @@
-import { Body, Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { UrlService } from './url.service';
 import { Request, Response } from 'express';
 import { UrlShortenerInputDTO } from './dto/url-shortener.dto';
 import { getBaseUrl } from '../utils/getBaseUrl';
 import { handleException } from '../../../@share/exceptions/handle.exception';
 import { Sequelize } from 'sequelize-typescript';
+import { Sort } from '../../../@share/enums/sort.enum';
 
 @Controller('api/urls')
 export class UrlController {
@@ -36,6 +46,22 @@ export class UrlController {
     } catch (error) {
       await transaction.rollback();
 
+      return handleException(error, response);
+    }
+  }
+
+  @Get()
+  public async list(
+    @Query() query: { page?: number; pageSize?: number; sort?: Sort },
+    @Res() response: Response,
+  ) {
+    const { page = 1, pageSize = 10 } = query;
+    const { userId } = { userId: '123' };
+    try {
+      const result = await this.service.list({ userId, page, pageSize });
+
+      return response.status(HttpStatus.OK).json(result);
+    } catch (error) {
       return handleException(error, response);
     }
   }

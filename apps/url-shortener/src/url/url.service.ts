@@ -67,4 +67,15 @@ export class UrlService {
       createdAt: url.getCreatedAt(),
     };
   }
+
+  public async list({ userId, page, pageSize }): Promise<any> {
+    const data = await this.repository.list({
+      userId,
+      page,
+      pageSize,
+      countOfClick: !!userId,
+    });
+
+    return data;
+  }
 }
