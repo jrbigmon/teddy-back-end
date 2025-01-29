@@ -104,7 +104,7 @@ export class Url implements Entity {
 
   public setOriginalUrl(url: string) {
     this.originalUrl = url;
-    this.updatedAt = new Date();
+    this.updated();
   }
 
   public getShortUrl(): string {
@@ -113,7 +113,7 @@ export class Url implements Entity {
 
   public setShortUrl(shortUrl: string) {
     this.shortUrl = shortUrl;
-    this.updatedAt = new Date();
+    this.updated();
   }
 
   public getUserId(): string | undefined {
@@ -142,5 +142,13 @@ export class Url implements Entity {
 
   public getDeletedAt(): Date | undefined {
     return this.deletedAt;
+  }
+
+  public updated(): void {
+    this.updatedAt = new Date();
+  }
+
+  public deleted(): void {
+    this.deletedAt = new Date();
   }
 }

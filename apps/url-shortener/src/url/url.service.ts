@@ -10,11 +10,12 @@ import {
 import { NotFoundException } from '../../../@share/exceptions/not-found.exception';
 import { ClickingInputDTO, ClickingOutputDTO } from './dto/clicking.dto';
 import { Sort } from '../../../@share/enums/sort.enum';
-import { ListInputDTO, ListOutputDTO } from './dto/list.dto';
+import { UrlListInputDTO, UrlListOutputDTO } from './dto/url-list.dto';
 import { getNextPage, getPrevPage } from '../../../@share/utils/getPagination';
-import { GetInputDTO, GetOutputDTO } from './dto/get-dto';
+import { UrlGetInputDTO, UrlGetOutputDTO } from './dto/url-get-dto';
 import { UrlUpdateInputDTO, UrlUpdateOutputDTO } from './dto/url-update.dto';
 import { UnauthorizedException } from '../../../@share/exceptions/unauthorized.expcetion';
+import { UrlDeleteInputDTO, UrlDeleteOutputDTO } from './dto/url-delete.dto';
 
 @Injectable()
 export class UrlService {
@@ -35,7 +36,7 @@ export class UrlService {
 
     const urlEntity = Url.create({ originalUrl, userId, shortUrl });
 
-    await this.repository.create(urlEntity, transaction);
+    await this.repository.save(urlEntity, transaction);
 
     return {
       id: urlEntity.getId(),
@@ -56,11 +57,10 @@ export class UrlService {
       throw new NotFoundException('Url not found');
     }
 
-    if (urlEntity.getUserId() !== userId) {
-      throw new UnauthorizedException('Unauthorized');
-    }
+    this.isAuthorized(urlEntity, userId);
 
     urlEntity.setShortUrl(Url.generateShortUrl(url, serverUrl));
+
     urlEntity.setOriginalUrl(url);
 
     await this.checkIfAlreadyExist({
@@ -69,7 +69,7 @@ export class UrlService {
       shortUrl: urlEntity.getShortUrl(),
     });
 
-    await this.repository.update(urlEntity, transaction);
+    await this.repository.save(urlEntity, transaction);
 
     return {
       id: urlEntity.getId(),
@@ -79,13 +79,29 @@ export class UrlService {
     };
   }
 
+  public async delete(input: UrlDeleteInputDTO): Promise<UrlDeleteOutputDTO> {
+    const { id, userId } = input;
+
+    const urlEntity = await this.repository.get(id);
+
+    if (!urlEntity) {
+      throw new NotFoundException('Url not found');
+    }
+
+    this.isAuthorized(urlEntity, userId);
+
+    urlEntity.deleted();
+
+    await this.repository.save(urlEntity);
+  }
+
   public async clicking(
     input: ClickingInputDTO,
     transaction?: Transaction,
   ): Promise<ClickingOutputDTO> {
     const { shortUrl, userId } = input;
 
-    const url = await this.repository.findOneByShortUrl(shortUrl, transaction);
+    const url = await this.repository.getOne({ shortUrl }, transaction);
 
     if (!url) {
       throw new NotFoundException('Url not found');
@@ -93,7 +109,7 @@ export class UrlService {
 
     url.click(userId);
 
-    await this.repository.saveClicks(url, transaction);
+    await this.repository.save(url, transaction);
 
     return {
       id: url.getId(),
@@ -102,7 +118,7 @@ export class UrlService {
     };
   }
 
-  public async list(input: ListInputDTO): Promise<ListOutputDTO> {
+  public async list(input: UrlListInputDTO): Promise<UrlListOutputDTO> {
     const { userId, baseUrl } = input;
 
     const { count, page, rows, sort, totalPages, pageSize } =
@@ -139,9 +155,9 @@ export class UrlService {
   }
 
   public async get(
-    input: GetInputDTO,
+    input: UrlGetInputDTO,
     transaction?: Transaction,
-  ): Promise<GetOutputDTO> {
+  ): Promise<UrlGetOutputDTO> {
     const { id, userId } = input;
 
     const url = await this.repository.get(id, transaction);
@@ -162,6 +178,12 @@ export class UrlService {
     };
   }
 
+  private isAuthorized(url: Url, userId: string) {
+    if (url.getUserId() !== userId) {
+      throw new UnauthorizedException('Unauthorized');
+    }
+  }
+
   private async checkIfAlreadyExist(
     {
       originalUrl,
@@ -171,8 +193,8 @@ export class UrlService {
     transaction?: Transaction,
   ) {
     const [existingOriginUrl, existingShortUrl] = await Promise.all([
-      this.repository.findOneByOriginalUrl(originalUrl, transaction),
-      this.repository.findOneByShortUrl(shortUrl, transaction),
+      this.repository.getOne({ originalUrl }, transaction),
+      this.repository.getOne({ shortUrl }, transaction),
     ]);
 
     if (existingOriginUrl && existingOriginUrl.getId() !== id) {

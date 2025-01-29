@@ -1,9 +1,9 @@
-export class GetInputDTO {
+export class UrlGetInputDTO {
   id: string;
   userId?: string;
 }
 
-export interface GetOutputDTO {
+export interface UrlGetOutputDTO {
   id: string;
   originalUrl: string;
   shortUrl: string;

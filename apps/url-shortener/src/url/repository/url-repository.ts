@@ -26,68 +26,30 @@ export class UrlRepository implements UrlRepositoryInterface {
     private readonly clickModel: typeof ClickModel,
   ) {}
 
-  public async findOneByShortUrl(
-    shortUrl: string,
-    transaction?: Transaction,
-  ): Promise<Url> {
-    if (!shortUrl) return null;
+  public async save(input: Url, transaction?: Transaction): Promise<void> {
+    const exists = await this.get(input.getId(), transaction);
 
-    const url = await this.model.findOne({
-      where: { shortUrl },
-      transaction,
-    });
+    const urlToSave: Partial<UrlModel> = {
+      id: input.getId(),
+      originalUrl: input.getOriginalUrl(),
+      shortUrl: input.getShortUrl(),
+      userId: input.getUserId(),
+      createdAt: input.getCreatedAt(),
+      updatedAt: input.getUpdatedAt(),
+      deletedAt: input.getDeletedAt(),
+    };
 
-    if (!url) return null;
+    if (exists) {
+      await this.model.update(urlToSave, {
+        where: {
+          id: input.getId(),
+        },
+      });
+    } else {
+      await this.model.create(urlToSave, { transaction });
+    }
 
-    return new Url({ ...url.toJSON(), clicks: [] });
-  }
-
-  public async findOneByOriginalUrl(
-    originalUrl: string,
-    transaction?: Transaction,
-  ): Promise<Url> {
-    if (!originalUrl) return null;
-
-    const url = await this.model.findOne({
-      where: { originalUrl },
-      transaction,
-    });
-
-    if (!url) return null;
-
-    return new Url({ ...url.toJSON(), clicks: [] });
-  }
-
-  public async create(input: Url, transaction?: Transaction): Promise<void> {
-    await this.model.create(
-      {
-        id: input.getId(),
-        originalUrl: input.getOriginalUrl(),
-        shortUrl: input.getShortUrl(),
-        userId: input.getUserId(),
-        createdAt: input.getCreatedAt(),
-        updatedAt: input.getUpdatedAt(),
-      },
-      { transaction },
-    );
-  }
-
-  public async update(input: Url, transaction?: Transaction): Promise<void> {
-    await this.model.update(
-      {
-        originalUrl: input.getOriginalUrl(),
-        shortUrl: input.getShortUrl(),
-        updatedAt: input.getUpdatedAt(),
-      },
-      {
-        where: { id: input.getId() },
-        transaction,
-      },
-    );
-  }
-
-  public async saveClicks(url: Url, transaction?: Transaction): Promise<void> {
-    const clicks = url.getClicks();
+    const clicks = input.getClicks();
 
     if (!clicks?.length) return;
 

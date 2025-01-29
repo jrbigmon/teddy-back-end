@@ -27,15 +27,8 @@ export interface GetOneInput {
 }
 
 export interface UrlRepositoryInterface {
-  findOneByShortUrl(shortUrl: string, transaction?: Transaction): Promise<Url>;
-  findOneByOriginalUrl(
-    originalUrl: string,
-    transaction?: Transaction,
-  ): Promise<Url>;
-  create(url: Url, transaction?: Transaction): Promise<void>;
-  update(url: Url, transaction?: Transaction): Promise<void>;
+  save(url: Url, transaction?: Transaction): Promise<void>;
   get(id: string, transaction?: Transaction): Promise<Url>;
-  saveClicks(url: Url, transaction?: Transaction): Promise<void>;
-  list(input: ListInput): Promise<ListOutput>;
-  getOne(input: Partial<GetOneInput>): Promise<Url>;
+  list(input: ListInput, transaction?: Transaction): Promise<ListOutput>;
+  getOne(input: Partial<GetOneInput>, transaction?: Transaction): Promise<Url>;
 }

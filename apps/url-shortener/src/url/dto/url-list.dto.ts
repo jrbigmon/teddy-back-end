@@ -1,6 +1,6 @@
 import { Sort } from '../../../../@share/enums/sort.enum';
 
-export interface ListInputDTO {
+export interface UrlListInputDTO {
   sort?: Sort;
   userId?: string;
   page?: number;
@@ -8,7 +8,7 @@ export interface ListInputDTO {
   baseUrl: string;
 }
 
-export interface ListOutputDTO {
+export interface UrlListOutputDTO {
   count: number;
   totalPages: number;
   page: number;

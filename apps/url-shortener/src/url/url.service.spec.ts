@@ -37,7 +37,7 @@ describe('UrlService unit tests', () => {
 
   it('should be reject when the original url already exists', async () => {
     jest
-      .spyOn(repository, 'findOneByOriginalUrl')
+      .spyOn(repository, 'getOne')
       .mockResolvedValue(
         new Url({ id: '123', originalUrl: 'test', shortUrl: 'test' }),
       );
@@ -55,7 +55,7 @@ describe('UrlService unit tests', () => {
 
   it('should be reject when the short url already exists', async () => {
     jest
-      .spyOn(repository, 'findOneByShortUrl')
+      .spyOn(repository, 'getOne')
       .mockResolvedValue(
         new Url({ id: '123', originalUrl: 'test', shortUrl: 'test' }),
       );
