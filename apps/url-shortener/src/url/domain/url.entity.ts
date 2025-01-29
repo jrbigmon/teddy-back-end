@@ -26,6 +26,7 @@ export class Url implements Entity {
   private shortUrl: string;
   private userId?: string;
   private clicks: Array<Click>;
+  private clickCount?: number;
   private createdAt?: Date;
   private updatedAt?: Date;
   private deletedAt?: Date;
@@ -45,6 +46,7 @@ export class Url implements Entity {
     this.shortUrl = shortUrl;
     this.userId = userId;
     this.clicks = clicks || [];
+    this.clickCount = clicks?.length ?? 0;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.deletedAt = deletedAt;
@@ -110,6 +112,14 @@ export class Url implements Entity {
 
   public getClicks(): Array<Click> {
     return this.clicks;
+  }
+
+  public getClickCount(): number {
+    return this.clickCount;
+  }
+
+  public setClickCount(value: number): void {
+    this.clickCount = value;
   }
 
   public getCreatedAt(): Date | undefined {
