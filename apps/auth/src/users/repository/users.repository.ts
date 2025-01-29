@@ -33,18 +33,7 @@ export class UserRepository implements UserRepositoryInterface {
 
     if (!user) return null;
 
-    const { name, email, password, createdAt, updatedAt, deletedAt } =
-      user.toJSON();
-
-    return new User({
-      id,
-      name,
-      email,
-      password,
-      createdAt,
-      updatedAt,
-      deletedAt,
-    });
+    return new User(user.toJSON());
   }
 
   public async getByEmail(
@@ -57,17 +46,6 @@ export class UserRepository implements UserRepositoryInterface {
 
     if (!user) return null;
 
-    const { id, name, password, createdAt, updatedAt, deletedAt } =
-      user.toJSON();
-
-    return new User({
-      id,
-      name,
-      email,
-      password,
-      createdAt,
-      updatedAt,
-      deletedAt,
-    });
+    return new User(user.toJSON());
   }
 }
