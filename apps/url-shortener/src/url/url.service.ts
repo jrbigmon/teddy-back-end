@@ -12,6 +12,7 @@ import { ClickingInputDTO, ClickingOutputDTO } from './dto/clicking.dto';
 import { Sort } from '../../../@share/enums/sort.enum';
 import { ListInputDTO, ListOutputDTO } from './dto/list.dto';
 import { getNextPage, getPrevPage } from '../../../@share/utils/getPagination';
+import { GetInputDTO, GetOutputDTO } from './dto/get-dto';
 
 @Injectable()
 export class UrlService {
@@ -92,7 +93,6 @@ export class UrlService {
         createdAt: row.getCreatedAt(),
         updatedAt: row.getUpdatedAt(),
         _infoPage: `${baseUrl}/${row.getId()}`,
-        _clicksPage: `${baseUrl}/${row.getId()}/clicks`,
       };
     });
 
@@ -105,6 +105,30 @@ export class UrlService {
       _nextPage: getNextPage({ page, totalPages, baseUrl, pageSize }),
       _prevPage: getPrevPage({ page, baseUrl, pageSize }),
       data,
+    };
+  }
+
+  public async get(
+    input: GetInputDTO,
+    transaction?: Transaction,
+  ): Promise<GetOutputDTO> {
+    const { id, userId } = input;
+
+    const url = await this.repository.get(id, transaction);
+
+    if (!url) {
+      throw new NotFoundException('Url not found');
+    }
+
+    const canSeeClickCount = userId && userId === url.getUserId();
+
+    return {
+      id: url.getId(),
+      originalUrl: url.getOriginalUrl(),
+      shortUrl: url.getShortUrl(),
+      clickCount: canSeeClickCount ? url.getClickCount() : null,
+      createdAt: url.getCreatedAt(),
+      updatedAt: url.getUpdatedAt(),
     };
   }
 }

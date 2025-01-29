@@ -112,6 +112,8 @@ export class UrlRepository implements UrlRepositoryInterface {
       transaction,
     });
 
+    if (!url) return null;
+
     return new Url({ ...url.toJSON(), clicks: [] });
   }
 

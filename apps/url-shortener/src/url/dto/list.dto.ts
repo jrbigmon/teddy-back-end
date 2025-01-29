@@ -24,6 +24,6 @@ export interface ListOutputDTO {
     updatedAt: Date;
     clickCount?: number;
     _infoPage: string;
-    _clicksPage: string;
+    // _clicksPage: string; TODO: create a route to show the clicks
   }[];
 }

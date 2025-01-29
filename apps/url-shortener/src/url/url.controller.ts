@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Post,
   Query,
   Req,
@@ -36,6 +37,7 @@ export class UrlController {
         {
           url: body?.url,
           serverUrl: getBaseUrl(request),
+          userId: null,
         },
         transaction,
       );
@@ -63,6 +65,20 @@ export class UrlController {
         page,
         pageSize,
         baseUrl: `${getBaseUrl(request)}/api/urls`,
+      });
+
+      return response.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      return handleException(error, response);
+    }
+  }
+
+  @Get(':id')
+  public async get(@Param('id') id: string, @Res() response: Response) {
+    try {
+      const result = await this.service.get({
+        id,
+        userId: null,
       });
 
       return response.status(HttpStatus.OK).json(result);
