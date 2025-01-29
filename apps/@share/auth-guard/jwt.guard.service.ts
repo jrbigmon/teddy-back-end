@@ -14,4 +14,10 @@ export class JwtGuardService {
   async genToken(payload: { id: string; email: string }): Promise<string> {
     return this.jwtService.signAsync(payload);
   }
+
+  decodeToken(token: string) {
+    return this.jwtService.decode<{ id: string; email: string }>(token, {
+      json: true,
+    });
+  }
 }

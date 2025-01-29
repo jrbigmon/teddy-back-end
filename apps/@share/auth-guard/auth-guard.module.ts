@@ -3,11 +3,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { JWT_SECRET_TEST } from '../constants/secrets-to-tests';
 import { JwtGuardService } from './jwt.guard.service';
 import { AuthGuard } from './auth-guard';
+import { DecodeJwt } from './decode-jwt';
 
 const isTestEnvironment = process.env.NODE_ENV === 'test';
 const secretTest = isTestEnvironment ? JWT_SECRET_TEST : null;
 
-const services: Provider[] = [JwtGuardService, AuthGuard];
+const services: Provider[] = [JwtGuardService, AuthGuard, DecodeJwt];
 
 @Module({
   imports: [

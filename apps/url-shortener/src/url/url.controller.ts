@@ -20,6 +20,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Sort } from '../../../@share/enums/sort.enum';
 import { AuthGuard } from '../../../@share/auth-guard/auth-guard';
 import { getDecodedUser } from '../../../@share/utils/getDecodedUser';
+import { DecodeJwt } from '../../../@share/auth-guard/decode-jwt';
 
 @Controller('api/urls')
 export class UrlController {
@@ -29,6 +30,7 @@ export class UrlController {
   ) {}
 
   @Post('shorten')
+  @UseGuards(DecodeJwt)
   public async urlShortener(
     @Body() body: Pick<UrlShortenerInputDTO, 'url'>,
     @Res() response: Response,
@@ -59,7 +61,7 @@ export class UrlController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, DecodeJwt)
   public async update(
     @Param('id') id: string,
     @Body() body: Pick<UrlShortenerInputDTO, 'url'>,
@@ -92,6 +94,7 @@ export class UrlController {
   }
 
   @Get()
+  @UseGuards(DecodeJwt)
   public async list(
     @Query() query: { page?: number; pageSize?: number; sort?: Sort },
     @Res() response: Response,
@@ -115,6 +118,7 @@ export class UrlController {
   }
 
   @Get(':id')
+  @UseGuards(DecodeJwt)
   public async get(
     @Param('id') id: string,
     @Req() request: Request,

@@ -14,6 +14,7 @@ import { ListInputDTO, ListOutputDTO } from './dto/list.dto';
 import { getNextPage, getPrevPage } from '../../../@share/utils/getPagination';
 import { GetInputDTO, GetOutputDTO } from './dto/get-dto';
 import { UrlUpdateInputDTO, UrlUpdateOutputDTO } from './dto/url-update.dto';
+import { UnauthorizedException } from '../../../@share/exceptions/unauthorized.expcetion';
 
 @Injectable()
 export class UrlService {
@@ -49,13 +50,14 @@ export class UrlService {
   ): Promise<UrlUpdateOutputDTO> {
     const { id, url, userId, serverUrl } = input;
 
-    const urlEntity = await this.repository.getOne({
-      id,
-      userId,
-    });
+    const urlEntity = await this.repository.get(id, transaction);
 
     if (!urlEntity) {
       throw new NotFoundException('Url not found');
+    }
+
+    if (urlEntity.getUserId() !== userId) {
+      throw new UnauthorizedException('Unauthorized');
     }
 
     urlEntity.setShortUrl(Url.generateShortUrl(url, serverUrl));
