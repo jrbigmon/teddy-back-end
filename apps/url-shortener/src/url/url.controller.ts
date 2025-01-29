@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
   Req,
   Res,
@@ -45,6 +46,36 @@ export class UrlController {
       await transaction.commit();
 
       return response.status(HttpStatus.CREATED).json(result);
+    } catch (error) {
+      await transaction.rollback();
+
+      return handleException(error, response);
+    }
+  }
+
+  @Put(':id')
+  public async update(
+    @Param('id') id: string,
+    @Body() body: Pick<UrlShortenerInputDTO, 'url'>,
+    @Res() response: Response,
+    @Req() request: Request,
+  ) {
+    const transaction = await this.sequelize.transaction();
+
+    try {
+      const result = await this.service.update(
+        {
+          id,
+          url: body?.url,
+          userId: null,
+          serverUrl: getBaseUrl(request),
+        },
+        transaction,
+      );
+
+      await transaction.commit();
+
+      return response.status(HttpStatus.OK).json(result);
     } catch (error) {
       await transaction.rollback();
 

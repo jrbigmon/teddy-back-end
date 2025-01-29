@@ -19,6 +19,13 @@ export interface ListOutput {
   rows: Url[];
 }
 
+export interface GetOneInput {
+  id: string;
+  originalUrl: string;
+  shortUrl: string;
+  userId: string;
+}
+
 export interface UrlRepositoryInterface {
   findOneByShortUrl(shortUrl: string, transaction?: Transaction): Promise<Url>;
   findOneByOriginalUrl(
@@ -30,4 +37,5 @@ export interface UrlRepositoryInterface {
   get(id: string, transaction?: Transaction): Promise<Url>;
   saveClicks(url: Url, transaction?: Transaction): Promise<void>;
   list(input: ListInput): Promise<ListOutput>;
+  getOne(input: Partial<GetOneInput>): Promise<Url>;
 }

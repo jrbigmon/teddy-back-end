@@ -102,8 +102,18 @@ export class Url implements Entity {
     return this.originalUrl;
   }
 
+  public setOriginalUrl(url: string) {
+    this.originalUrl = url;
+    this.updatedAt = new Date();
+  }
+
   public getShortUrl(): string {
     return this.shortUrl;
+  }
+
+  public setShortUrl(shortUrl: string) {
+    this.shortUrl = shortUrl;
+    this.updatedAt = new Date();
   }
 
   public getUserId(): string | undefined {

@@ -13,6 +13,7 @@ import { Sort } from '../../../@share/enums/sort.enum';
 import { ListInputDTO, ListOutputDTO } from './dto/list.dto';
 import { getNextPage, getPrevPage } from '../../../@share/utils/getPagination';
 import { GetInputDTO, GetOutputDTO } from './dto/get-dto';
+import { UrlUpdateInputDTO, UrlUpdateOutputDTO } from './dto/url-update.dto';
 
 @Injectable()
 export class UrlService {
@@ -29,14 +30,7 @@ export class UrlService {
 
     const shortUrl = Url.generateShortUrl(originalUrl, serverUrl);
 
-    const [existingOriginUrl, existingShortUrl] = await Promise.all([
-      this.repository.findOneByOriginalUrl(originalUrl, transaction),
-      this.repository.findOneByShortUrl(shortUrl, transaction),
-    ]);
-
-    if (existingOriginUrl || existingShortUrl) {
-      throw new DataAlreadySavedException('Url already shortened');
-    }
+    await this.checkIfAlreadyExist({ originalUrl, shortUrl });
 
     const urlEntity = Url.create({ originalUrl, userId, shortUrl });
 
@@ -46,6 +40,40 @@ export class UrlService {
       id: urlEntity.getId(),
       shortUrl: urlEntity.getShortUrl(),
       createdAt: urlEntity.getCreatedAt(),
+    };
+  }
+
+  public async update(
+    input: UrlUpdateInputDTO,
+    transaction?: Transaction,
+  ): Promise<UrlUpdateOutputDTO> {
+    const { id, url, userId, serverUrl } = input;
+
+    const urlEntity = await this.repository.getOne({
+      id,
+      userId,
+    });
+
+    if (!urlEntity) {
+      throw new NotFoundException('Url not found');
+    }
+
+    urlEntity.setShortUrl(Url.generateShortUrl(url, serverUrl));
+    urlEntity.setOriginalUrl(url);
+
+    await this.checkIfAlreadyExist({
+      id,
+      originalUrl: urlEntity.getOriginalUrl(),
+      shortUrl: urlEntity.getShortUrl(),
+    });
+
+    await this.repository.update(urlEntity, transaction);
+
+    return {
+      id: urlEntity.getId(),
+      shortUrl: urlEntity.getShortUrl(),
+      createdAt: urlEntity.getCreatedAt(),
+      updatedAt: urlEntity.getUpdatedAt(),
     };
   }
 
@@ -130,5 +158,27 @@ export class UrlService {
       createdAt: url.getCreatedAt(),
       updatedAt: url.getUpdatedAt(),
     };
+  }
+
+  private async checkIfAlreadyExist(
+    {
+      originalUrl,
+      shortUrl,
+      id,
+    }: { originalUrl: string; shortUrl: string; id?: string },
+    transaction?: Transaction,
+  ) {
+    const [existingOriginUrl, existingShortUrl] = await Promise.all([
+      this.repository.findOneByOriginalUrl(originalUrl, transaction),
+      this.repository.findOneByShortUrl(shortUrl, transaction),
+    ]);
+
+    if (existingOriginUrl && existingOriginUrl.getId() !== id) {
+      throw new DataAlreadySavedException('Url already shortened');
+    }
+
+    if (existingShortUrl && existingShortUrl.getId() !== id) {
+      throw new DataAlreadySavedException('Url already shortened');
+    }
   }
 }

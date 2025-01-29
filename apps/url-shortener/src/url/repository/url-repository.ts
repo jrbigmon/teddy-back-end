@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  GetOneInput,
   ListInput,
   ListOutput,
   UrlRepositoryInterface,
@@ -76,6 +77,7 @@ export class UrlRepository implements UrlRepositoryInterface {
       {
         originalUrl: input.getOriginalUrl(),
         shortUrl: input.getShortUrl(),
+        updatedAt: input.getUpdatedAt(),
       },
       {
         where: { id: input.getId() },
@@ -175,5 +177,15 @@ export class UrlRepository implements UrlRepositoryInterface {
         return url;
       }),
     };
+  }
+
+  public async getOne(input: Partial<GetOneInput>): Promise<Url> {
+    const url = await this.model.findOne({
+      where: input,
+    });
+
+    if (!url) return null;
+
+    return new Url({ ...url.toJSON(), clicks: [] });
   }
 }
