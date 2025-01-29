@@ -36,7 +36,11 @@ describe('UrlService unit tests', () => {
   });
 
   it('should be reject when the original url already exists', async () => {
-    jest.spyOn(repository, 'findOneByOriginalUrl').mockResolvedValue({} as Url);
+    jest
+      .spyOn(repository, 'findOneByOriginalUrl')
+      .mockResolvedValue(
+        new Url({ id: '123', originalUrl: 'test', shortUrl: 'test' }),
+      );
 
     const input: UrlShortenerInputDTO = {
       url: 'https://www.example.com',
@@ -50,7 +54,11 @@ describe('UrlService unit tests', () => {
   });
 
   it('should be reject when the short url already exists', async () => {
-    jest.spyOn(repository, 'findOneByShortUrl').mockResolvedValue({} as Url);
+    jest
+      .spyOn(repository, 'findOneByShortUrl')
+      .mockResolvedValue(
+        new Url({ id: '123', originalUrl: 'test', shortUrl: 'test' }),
+      );
 
     const input: UrlShortenerInputDTO = {
       url: 'https://www.example.com',
