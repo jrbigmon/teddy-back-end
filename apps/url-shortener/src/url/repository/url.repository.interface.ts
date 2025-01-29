@@ -10,5 +10,5 @@ export interface UrlRepositoryInterface {
   create(url: Url, transaction?: Transaction): Promise<void>;
   update(url: Url, transaction?: Transaction): Promise<void>;
   get(id: string, transaction?: Transaction): Promise<Url>;
-  addClicks(url: Url, transaction?: Transaction): Promise<void>;
+  saveClicks(url: Url, transaction?: Transaction): Promise<void>;
 }

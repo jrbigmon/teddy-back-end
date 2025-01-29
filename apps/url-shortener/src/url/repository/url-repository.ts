@@ -47,33 +47,34 @@ export class UrlRepository implements UrlRepositoryInterface {
     return new Url({ ...url.toJSON(), clicks: [] });
   }
 
-  public async create(url: Url, transaction?: Transaction): Promise<void> {
+  public async create(input: Url, transaction?: Transaction): Promise<void> {
     await this.model.create(
       {
-        originalUrl: url.getOriginalUrl(),
-        shortUrl: url.getShortUrl(),
-        userId: url.getUserId(),
-        createdAt: url.getCreatedAt(),
-        updatedAt: url.getUpdatedAt(),
+        id: input.getId(),
+        originalUrl: input.getOriginalUrl(),
+        shortUrl: input.getShortUrl(),
+        userId: input.getUserId(),
+        createdAt: input.getCreatedAt(),
+        updatedAt: input.getUpdatedAt(),
       },
       { transaction },
     );
   }
 
-  public async update(url: Url, transaction?: Transaction): Promise<void> {
+  public async update(input: Url, transaction?: Transaction): Promise<void> {
     await this.model.update(
       {
-        originalUrl: url.getOriginalUrl(),
-        shortUrl: url.getShortUrl(),
+        originalUrl: input.getOriginalUrl(),
+        shortUrl: input.getShortUrl(),
       },
       {
-        where: { id: url.getId() },
+        where: { id: input.getId() },
         transaction,
       },
     );
   }
 
-  public async addClicks(url: Url, transaction?: Transaction): Promise<void> {
+  public async saveClicks(url: Url, transaction?: Transaction): Promise<void> {
     const clicks = url.getClicks();
 
     if (!clicks?.length) return;

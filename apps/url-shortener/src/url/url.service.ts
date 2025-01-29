@@ -7,6 +7,8 @@ import {
   UrlShortenerInputDTO,
   UrlShortenerOutputDTO,
 } from './dto/url-shortener.dto';
+import { NotFoundException } from '../../../@share/exceptions/not-found.exception';
+import { ClickingInputDTO, ClickingOutputDTO } from './dto/clicking.dto';
 
 @Injectable()
 export class UrlService {
@@ -40,6 +42,29 @@ export class UrlService {
       id: urlEntity.getId(),
       shortUrl: urlEntity.getShortUrl(),
       createdAt: urlEntity.getCreatedAt(),
+    };
+  }
+
+  public async clicking(
+    input: ClickingInputDTO,
+    transaction?: Transaction,
+  ): Promise<ClickingOutputDTO> {
+    const { shortUrl, userId } = input;
+
+    const url = await this.repository.findOneByShortUrl(shortUrl, transaction);
+
+    if (!url) {
+      throw new NotFoundException('Url not found');
+    }
+
+    url.click(userId);
+
+    await this.repository.saveClicks(url, transaction);
+
+    return {
+      id: url.getId(),
+      originalUrl: url.getOriginalUrl(),
+      createdAt: url.getCreatedAt(),
     };
   }
 }

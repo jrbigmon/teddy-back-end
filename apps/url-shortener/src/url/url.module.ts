@@ -3,6 +3,7 @@ import { UrlService } from './url.service';
 import { UrlController } from './url.controller';
 import { DatabaseModule, modelsModule } from '../database/database.module';
 import { UrlRepository } from './repository/url-repository';
+import { ClickController } from './click.controller';
 
 const services: Provider[] = [
   UrlService,
@@ -15,7 +16,7 @@ const services: Provider[] = [
 
 @Module({
   imports: [DatabaseModule, modelsModule],
-  controllers: [UrlController],
+  controllers: [UrlController, ClickController],
   providers: services,
   exports: services,
 })

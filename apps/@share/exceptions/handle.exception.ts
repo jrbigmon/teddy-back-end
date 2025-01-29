@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { InvalidDataException } from './invalid-data.expcetion';
 import { UnauthorizedException } from './unauthorized.expcetion';
 import { DataAlreadySavedException } from './data-already-saved.exception';
+import { NotFoundException } from './not-found.exception';
 
 export function handleException(error: Error, response: Response): Response {
   console.error(error);
@@ -22,6 +23,12 @@ export function handleException(error: Error, response: Response): Response {
   if (error.name === DataAlreadySavedException.name) {
     return response
       .status(HttpStatus.CONFLICT)
+      .json({ message: error.message });
+  }
+
+  if (error.name === NotFoundException.name) {
+    return response
+      .status(HttpStatus.NOT_FOUND)
       .json({ message: error.message });
   }
 
