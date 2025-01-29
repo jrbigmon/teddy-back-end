@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { UnauthorizedException } from '../../../@share/exceptions/unauthorized.expcetion';
 import { comparePassword } from '../utils/crypto';
 import { UserService } from '../users/users.service';
-import { JwtService } from '@nestjs/jwt';
 import { LoginInputDTO, LoginOutputDTO } from './dto/login.dto';
+import { JwtGuardService } from '../../../@share/auth-guard/jwt.guard.service';
 
 @Injectable()
 export class LoginService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService,
+    private readonly jwtGuardService: JwtGuardService,
   ) {}
 
   private unauthorizedError() {
@@ -35,7 +35,7 @@ export class LoginService {
 
     const payload = { id: user.getId(), email: user.getEmail() };
 
-    const token = await this.jwtService.signAsync(payload);
+    const token = await this.jwtGuardService.genToken(payload);
 
     return {
       access_token: token,

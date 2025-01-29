@@ -4,18 +4,19 @@ import { LoginService } from './login.service';
 import { randomUUID } from 'node:crypto';
 import { User } from '../users/domain/users.entity';
 import { encryptPassword } from '../utils/crypto';
+import { JwtGuardService } from '../../../@share/auth-guard/jwt.guard.service';
 
 describe('LoginService unit tests', () => {
   let loginService: LoginService;
   let userService: UserService;
-  let jwtService: JwtService;
+  let jwtService: JwtGuardService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
 
     jwtService = {
-      signAsync: jest.fn().mockResolvedValue(randomUUID()),
-    } as unknown as JwtService;
+      genToken: jest.fn().mockResolvedValue(randomUUID()),
+    } as unknown as JwtGuardService;
 
     userService = {
       getByEmail: jest.fn().mockResolvedValue(
