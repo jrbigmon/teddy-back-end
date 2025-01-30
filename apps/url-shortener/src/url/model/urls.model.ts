@@ -1,11 +1,14 @@
 import {
+  BelongsTo,
   Column,
+  ForeignKey,
   HasMany,
   Model,
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
 import ClickModel from './clicks.model';
+import UserModel from '../../users/model/users.model';
 
 @Table({
   tableName: 'urls',
@@ -24,8 +27,12 @@ export default class UrlModel extends Model<UrlModel> {
   @Column({ field: 'short_url' })
   public shortUrl: string;
 
+  @ForeignKey(() => UserModel)
   @Column({ field: 'user_id' })
-  public userId: string;
+  public userId?: string;
+
+  @BelongsTo(() => UserModel, 'userId')
+  public user?: UserModel;
 
   @HasMany(() => ClickModel, 'url_id')
   public clicks: ClickModel[];

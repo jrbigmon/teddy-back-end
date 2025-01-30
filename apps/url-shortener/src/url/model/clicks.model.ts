@@ -7,6 +7,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import UrlModel from './urls.model';
+import UserModel from '../../users/model/users.model';
 
 @Table({
   tableName: 'clicks',
@@ -26,8 +27,12 @@ export default class ClickModel extends Model<ClickModel> {
   @BelongsTo(() => UrlModel, 'urlId')
   public url: UrlModel;
 
+  @ForeignKey(() => UserModel)
   @Column({ field: 'user_id' })
   public userId?: string;
+
+  @BelongsTo(() => UserModel, 'userId')
+  public user?: UserModel;
 
   @Column({ field: 'created_at' })
   public createdAt: Date;
