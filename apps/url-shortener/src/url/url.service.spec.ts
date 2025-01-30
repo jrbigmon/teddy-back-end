@@ -1,3 +1,4 @@
+import { UserService } from '../users/users.service';
 import { Url } from './domain/url.entity';
 import { UrlDeleteInputDTO } from './dto/url-delete.dto';
 import { UrlGetInputDTO } from './dto/url-get-dto';
@@ -12,11 +13,15 @@ const serverUrl = 'http://localhost:3000';
 
 describe('UrlService unit tests', () => {
   let urlService: UrlService = null;
+  let userService: UserService = null;
   let repository: UrlRepositoryInterface = null;
 
   beforeEach(() => {
+    userService = {
+      get: jest.fn(),
+    } as unknown as UserService;
     repository = new UrlInMemoryRepository();
-    urlService = new UrlService(repository);
+    urlService = new UrlService(repository, userService);
   });
 
   describe('urlShortener', () => {
