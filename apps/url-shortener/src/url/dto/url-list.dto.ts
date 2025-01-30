@@ -12,7 +12,7 @@ export class UrlListInputDTO {
   pageSize?: number;
 
   @ApiProperty({ description: 'Sort order (ASC or DESC).', example: 'ASC' })
-  sort?: string;
+  sort?: Sort;
 }
 
 export class UrlOutputDTO {
