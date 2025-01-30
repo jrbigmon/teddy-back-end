@@ -16,7 +16,9 @@ export class UrlInMemoryRepository implements UrlRepositoryInterface {
   }
 
   public async save(url: Url, _?: Transaction): Promise<void> {
-    const urlIndex = this.urls.findIndex((url) => url.getId() === url.getId());
+    const urlIndex = this.urls.findIndex(
+      (urlInDb) => url.getId() === urlInDb.getId(),
+    );
 
     if (urlIndex !== -1) {
       this.urls[urlIndex] = url;

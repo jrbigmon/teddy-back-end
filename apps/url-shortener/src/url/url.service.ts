@@ -200,12 +200,16 @@ export class UrlService {
       this.repository.getOne({ shortUrl }, transaction),
     ]);
 
-    if (existingOriginUrl && existingOriginUrl.getId() !== id) {
+    const dataAlreadySavedException = () => {
       throw new DataAlreadySavedException('Url already shortened');
+    };
+
+    if (existingOriginUrl && existingOriginUrl.getId() !== id) {
+      dataAlreadySavedException();
     }
 
     if (existingShortUrl && existingShortUrl.getId() !== id) {
-      throw new DataAlreadySavedException('Url already shortened');
+      dataAlreadySavedException();
     }
   }
 }
