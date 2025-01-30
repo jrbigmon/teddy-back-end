@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  settings_db:
+    image: postgres:15
+    container_name: auth_db
+    environment:
+      POSTGRES_USER: ${AUTH_DATABASE_USER}
+      POSTGRES_PASSWORD: ${AUTH_DATABASE_PASSWORD}
+      POSTGRES_DB: ${AUTH_DATABASE_NAME}
+    ports:
+      - "${AUTH_DATABASE_PORT}:${AUTH_DATABASE_PORT}"
+    volumes:
+      - settings_db_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  orders_db:
+    image: postgres:15
+    container_name: url_shortener_db
+    environment:
+      POSTGRES_USER: ${URL_SHORTENER_DATABASE_USER}
+      POSTGRES_PASSWORD: ${URL_SHORTENER_DATABASE_PASSWORD}
+      POSTGRES_DB: ${URL_SHORTENER_DATABASE_NAME}
+    ports:
+      - "{URL_SHORTENER_DATABASE_PORT}:${URL_SHORTENER_DATABASE_PORT}"
+    volumes:
+      - orders_db_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  settings_service:
+    build:
+      context: .
+      dockerfile: ./apps/auth/dockerfile
+    container_name: auth_service
+    ports:
+      - ${AUTH_PORT}:${AUTH_PORT}
+    environment:
+      AUTH_DATABASE_HOST: ${AUTH_DATABASE_HOST}
+      AUTH_DATABASE_USER: ${AUTH_DATABASE_USER}
+      AUTH_DATABASE_PASSWORD: ${AUTH_DATABASE_PASSWORD}
+      AUTH_DATABASE_NAME: ${AUTH_DATABASE_NAME}
+      AUTH_DATABASE_PORT: ${AUTH_DATABASE_PORT}
+      AUTH_DATABASE_EMAIL: ${AUTH_DATABASE_EMAIL}
+    depends_on:
+      - auth_db
+    networks:
+      - app_network
+
+  orders_service:
+    build:
+      context: .
+      dockerfile: ./apps/url-shortener/dockerfile
+    container_name: url_shortener_service
+    ports:
+      - ${URL_SHORTENER_PORT}:${URL_SHORTENER_PORT}
+    environment:
+      URL_SHORTENER_DATABASE_HOST: ${URL_SHORTENER_DATABASE_HOST}
+      URL_SHORTENER_DATABASE_USER: ${URL_SHORTENER_DATABASE_USER}
+      URL_SHORTENER_DATABASE_PASSWORD: ${URL_SHORTENER_DATABASE_PASSWORD}
+      URL_SHORTENER_DATABASE_NAME: ${URL_SHORTENER_DATABASE_NAME}
+      URL_SHORTENER_DATABASE_PORT: ${URL_SHORTENER_DATABASE_PORT}
+      URL_SHORTENER_DATABASE_EMAIL: ${URL_SHORTENER_DATABASE_EMAIL}
+    depends_on:
+      - url_shortener_db
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  auth_db:
+  url_shortener_db:
