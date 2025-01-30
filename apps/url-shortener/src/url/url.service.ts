@@ -16,12 +16,14 @@ import { UrlGetInputDTO, UrlGetOutputDTO } from './dto/url-get-dto';
 import { UrlUpdateInputDTO, UrlUpdateOutputDTO } from './dto/url-update.dto';
 import { UnauthorizedException } from '../../../@share/exceptions/unauthorized.exception';
 import { UrlDeleteInputDTO, UrlDeleteOutputDTO } from './dto/url-delete.dto';
+import { UserService } from '../users/users.service';
 
 @Injectable()
 export class UrlService {
   constructor(
     @Inject('URL_REPOSITORY')
     private readonly repository: UrlRepositoryInterface,
+    private readonly userService: UserService,
   ) {}
 
   public async urlShortener(
@@ -35,6 +37,10 @@ export class UrlService {
     await this.checkIfAlreadyExist({ originalUrl, shortUrl });
 
     const urlEntity = Url.create({ originalUrl, userId, shortUrl });
+
+    if (urlEntity.getUserId()) {
+      await this.userService.get(urlEntity.getUserId(), transaction);
+    }
 
     await this.repository.save(urlEntity, transaction);
 

@@ -5,6 +5,7 @@ import { DatabaseModule, modelsModule } from '../database/database.module';
 import { UrlRepository } from './repository/url-repository';
 import { ClickController } from './click.controller';
 import { AuthGuardModule } from '../../../@share/auth-guard/auth-guard.module';
+import { UserModule } from '../users/users.module';
 
 const services: Provider[] = [
   UrlService,
@@ -16,7 +17,7 @@ const services: Provider[] = [
 ];
 
 @Module({
-  imports: [AuthGuardModule, DatabaseModule, modelsModule],
+  imports: [AuthGuardModule, DatabaseModule, UserModule, modelsModule],
   controllers: [UrlController, ClickController],
   providers: services,
   exports: services,
