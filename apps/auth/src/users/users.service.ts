@@ -4,12 +4,14 @@ import { Transaction } from 'sequelize';
 import { encryptPassword } from '../utils/crypto';
 import { User } from './domain/users.entity';
 import { CreateUserInputDTO, CreateUserOutputDTO } from './dto/create-user.dto';
+import { UserQueueProducer } from '../queues/users/users.queue.producer';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject('USER_REPOSITORY')
     private readonly repository: UserRepositoryInterface,
+    private readonly userQueueProducer: UserQueueProducer,
   ) {}
 
   public async create(
@@ -23,6 +25,8 @@ export class UserService {
     const user = User.create({ name, email, password: passwordEncrypted });
 
     await this.repository.create(user, transaction);
+
+    await this.userQueueProducer.userCreated(user, transaction);
 
     return {
       id: user.getId(),

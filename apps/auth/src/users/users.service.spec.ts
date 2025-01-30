@@ -1,3 +1,4 @@
+import { UserQueueProducer } from '../queues/users/users.queue.producer';
 import { CreateUserInputDTO } from './dto/create-user.dto';
 import { UserInMemoryRepository } from './repository/users-in-memory.repository';
 import { UserRepositoryInterface } from './repository/users.repository.interface';
@@ -6,10 +7,15 @@ import { UserService } from './users.service';
 describe('UserService unit tests', () => {
   let userService: UserService = null;
   let repository: UserRepositoryInterface = null;
+  let userQueueProducer: UserQueueProducer = null;
 
   beforeEach(() => {
+    userQueueProducer = {
+      userCreated: jest.fn(),
+    } as unknown as UserQueueProducer;
+
     repository = new UserInMemoryRepository();
-    userService = new UserService(repository);
+    userService = new UserService(repository, userQueueProducer);
   });
 
   it('should be create a new user and encrypt the password', async () => {
