@@ -13,7 +13,7 @@ async function bootstrap() {
 
   documentFactory(app, [userDocConfig]);
 
-  await app.listen(port, () => {
+  await app.listen(port, '0.0.0.0', () => {
     logger.verbose('App running on port ' + port);
     logger.verbose('Swagger API docs at http://localhost:' + port + '/api');
   });

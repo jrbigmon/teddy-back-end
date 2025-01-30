@@ -4,12 +4,12 @@ WORKDIR /usr/src/app
 
 COPY package.json yarn.lock ./
 
-RUN rm -rf node_modules && yarn install --force
+RUN yarn install --frozen-lockfile --ignore-scripts
 
 COPY . .
 
 RUN yarn build
 
-EXPOSE 3001
+EXPOSE $AUTH_PORT
 
 CMD [ "yarn", "start", "auth" ]

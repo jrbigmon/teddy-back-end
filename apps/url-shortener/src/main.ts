@@ -13,7 +13,7 @@ async function bootstrap() {
 
   documentFactory(app, [urlShortenerDocConfig]);
 
-  await app.listen(3000, () => {
+  await app.listen(3000, '0.0.0.0', () => {
     logger.verbose('App running on port ' + port);
     logger.verbose('Swagger API docs at http://localhost:' + port + '/api');
   });
