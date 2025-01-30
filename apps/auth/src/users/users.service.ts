@@ -5,6 +5,7 @@ import { encryptPassword } from '../utils/crypto';
 import { User } from './domain/users.entity';
 import { CreateUserInputDTO, CreateUserOutputDTO } from './dto/create-user.dto';
 import { UserQueueProducer } from '../queues/users/users.queue.producer';
+import { DataAlreadySavedException } from '../../../@share/exceptions/data-already-saved.exception';
 
 @Injectable()
 export class UserService {
@@ -19,6 +20,8 @@ export class UserService {
     transaction?: Transaction,
   ): Promise<CreateUserOutputDTO> {
     const { name, email, password } = input;
+
+    await this.checkEmailAlreadyExists(email, transaction);
 
     const passwordEncrypted = await encryptPassword(password);
 
@@ -40,5 +43,16 @@ export class UserService {
     transaction?: Transaction,
   ): Promise<User | null> {
     return this.repository.getByEmail(email, transaction);
+  }
+
+  private async checkEmailAlreadyExists(
+    email: string,
+    transaction?: Transaction,
+  ): Promise<void> {
+    const user = await this.getByEmail(email, transaction);
+
+    if (user) {
+      throw new DataAlreadySavedException('Email already exists');
+    }
   }
 }
