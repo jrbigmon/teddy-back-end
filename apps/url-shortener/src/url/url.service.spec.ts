@@ -1,4 +1,5 @@
 import { Url } from './domain/url.entity';
+import { UrlDeleteInputDTO } from './dto/url-delete.dto';
 import { UrlShortenerInputDTO } from './dto/url-shortener.dto';
 import { UrlUpdateInputDTO } from './dto/url-update.dto';
 import { UrlInMemoryRepository } from './repository/url-in-memory.repository';
@@ -77,7 +78,7 @@ describe('UrlService unit tests', () => {
   });
 
   describe('update', () => {
-    it('should be update the url', async () => {
+    it('should be update the url successfully', async () => {
       await repository.save(
         new Url({
           id: '123',
@@ -112,7 +113,7 @@ describe('UrlService unit tests', () => {
       });
     });
 
-    it('should be reject whe the url not exists', async () => {
+    it('should be reject when the url not exists', async () => {
       const input: UrlUpdateInputDTO = {
         id: '123',
         url: 'https://www.example.com',
@@ -183,6 +184,65 @@ describe('UrlService unit tests', () => {
       await expect(urlService.update(input)).rejects.toThrow(
         'Url already shortened',
       );
+    });
+  });
+
+  describe('delete', () => {
+    it('should be delete a url successfully', async () => {
+      await repository.save(
+        new Url({
+          id: '123',
+          originalUrl: 'https://ola.mundo.com',
+          shortUrl: Url.generateShortUrl('https://ola.mundo.com', serverUrl),
+          userId: 'testUserId',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+        }),
+      );
+
+      const input: UrlDeleteInputDTO = {
+        id: '123',
+        userId: 'testUserId',
+      };
+
+      await urlService.delete(input);
+
+      const urlSaved = await repository.get(input.id);
+
+      expect(urlSaved.getDeletedAt()).not.toBeNull();
+    });
+
+    it('should be reject when url not exists', async () => {
+      const input: UrlDeleteInputDTO = {
+        id: '123',
+        userId: 'testUserId',
+      };
+
+      await expect(() => urlService.delete(input)).rejects.toThrow(
+        'Url not found',
+      );
+    });
+
+    it('should be reject when the user is unauthorized', async () => {
+      await repository.save(
+        new Url({
+          id: '123',
+          originalUrl: 'https://ola.mundo.com',
+          shortUrl: Url.generateShortUrl('https://ola.mundo.com', serverUrl),
+          userId: 'testUserId',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+        }),
+      );
+
+      const input: UrlDeleteInputDTO = {
+        id: '123',
+        userId: 'wrongUserId',
+      };
+
+      await expect(urlService.delete(input)).rejects.toThrow('Unauthorized');
     });
   });
 });
