@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./apps/url-shortener/test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/bullmq": "^11.0.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^10.0.0",
@@ -27,6 +28,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/sequelize": "^11.0.0",
     "bcrypt": "^5.1.1",
+    "bullmq": "^5.39.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "sequelize": "^6.37.5",
