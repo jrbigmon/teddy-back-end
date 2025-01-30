@@ -5,8 +5,9 @@ import { Sequelize } from 'sequelize-typescript';
 import { Response } from 'express';
 
 import { handleException } from '../../../@share/exceptions/handle.exception';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('api/users')
 export class UserController {
   constructor(

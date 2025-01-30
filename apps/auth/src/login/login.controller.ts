@@ -3,8 +3,9 @@ import { LoginInputDTO, LoginOutputDTO } from './dto/login.dto';
 import { LoginService } from './login.service';
 import { Response } from 'express';
 import { handleException } from '../../../@share/exceptions/handle.exception';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Login')
 @Controller('api/login')
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
