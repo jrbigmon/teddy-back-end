@@ -74,11 +74,36 @@ export class UrlRepository implements UrlRepositoryInterface {
 
     const url = await this.model.findByPk(id, {
       transaction,
+      attributes: [
+        'id',
+        'originalUrl',
+        'shortUrl',
+        'userId',
+        'createdAt',
+        'updatedAt',
+        'deletedAt',
+        [
+          Sequelize.literal(
+            '(SELECT COUNT(*) FROM "clicks" WHERE "clicks"."url_id" = "UrlModel"."id")',
+          ),
+          'clickCount',
+        ],
+      ],
     });
 
     if (!url) return null;
 
-    return new Url({ ...url.toJSON(), clicks: [] });
+    const urlJSON = url.toJSON();
+
+    const urlEntity = new Url({ ...urlJSON, clicks: [] });
+
+    const clickCount = urlJSON['clickCount'];
+
+    if (clickCount) {
+      urlEntity.setClickCount(+clickCount);
+    }
+
+    return urlEntity;
   }
 
   public async list(input: ListInput): Promise<ListOutput> {
@@ -133,7 +158,7 @@ export class UrlRepository implements UrlRepositoryInterface {
         const clickCount = urlJSON['clickCount'];
 
         if (clickCount) {
-          url.setClickCount(clickCount);
+          url.setClickCount(+clickCount);
         }
 
         return url;
