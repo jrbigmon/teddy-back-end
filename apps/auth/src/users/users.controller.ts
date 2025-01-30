@@ -5,6 +5,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Response } from 'express';
 
 import { handleException } from '../../../@share/exceptions/handle.exception';
+import { ApiCreatedResponse } from '@nestjs/swagger';
 
 @Controller('api/users')
 export class UserController {
@@ -14,6 +15,10 @@ export class UserController {
   ) {}
 
   @Post()
+  @ApiCreatedResponse({
+    description: 'A new user has been created.',
+    type: CreateUserOutputDTO,
+  })
   public async create(
     @Body() body: CreateUserInputDTO,
     @Res() response: Response,
