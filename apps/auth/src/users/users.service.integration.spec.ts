@@ -4,10 +4,13 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { models } from '../database/database.module';
 import { UserService } from './users.service';
 import UserModel from './model/users.model';
+import { UserQueueProducer } from '../queues/users/users.queue.producer';
+import { User } from './domain/users.entity';
 
 describe('UserService integration tests', () => {
   let moduleRef: TestingModule;
   let userService: UserService;
+  let userQueueProducer: UserQueueProducer;
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
@@ -25,14 +28,24 @@ describe('UserService integration tests', () => {
     }).compile();
 
     userService = moduleRef.get<UserService>(UserService);
+    userQueueProducer = moduleRef.get<UserQueueProducer>(UserQueueProducer);
+  });
+
+  beforeAll(() => {
+    jest
+      .spyOn(userQueueProducer, 'userCreated')
+      .mockImplementation(async (_: User) => {
+        return;
+      });
+  });
+
+  afterAll(async () => {
+    jest.clearAllMocks();
+    await moduleRef.close();
   });
 
   it('should be defined the userService', () => {
     expect(userService).toBeDefined();
-  });
-
-  afterAll(async () => {
-    await moduleRef.close();
   });
 
   it('should be create the user and save in the database', async () => {

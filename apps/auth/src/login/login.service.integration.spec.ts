@@ -4,11 +4,14 @@ import { models } from '../database/database.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { LoginModule } from './login.module';
 import { UserService } from '../users/users.service';
+import { UserQueueProducer } from '../queues/users/users.queue.producer';
+import { User } from '../users/domain/users.entity';
 
 describe('LoginService integration tests', () => {
   let moduleRef: TestingModule;
   let loginService: LoginService;
   let userService: UserService;
+  let userQueueProducer: UserQueueProducer;
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
@@ -27,9 +30,16 @@ describe('LoginService integration tests', () => {
 
     loginService = moduleRef.get<LoginService>(LoginService);
     userService = moduleRef.get<UserService>(UserService);
+    userQueueProducer = moduleRef.get<UserQueueProducer>(UserQueueProducer);
   });
 
   beforeAll(async () => {
+    jest
+      .spyOn(userQueueProducer, 'userCreated')
+      .mockImplementation(async (_: User) => {
+        return;
+      });
+
     const userInput = {
       name: 'test',
       email: 'test@example.com',
@@ -37,6 +47,11 @@ describe('LoginService integration tests', () => {
     };
 
     await userService.create(userInput);
+  });
+
+  afterAll(async () => {
+    jest.clearAllMocks();
+    await moduleRef.close();
   });
 
   it('should be defined the loginService', () => {
