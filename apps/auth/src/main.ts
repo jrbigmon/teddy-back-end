@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AuthModule } from './auth.module';
 import { documentFactory } from '../../@share/doc/document.factory';
-import { userDocConfig } from './users/doc/swagger';
+import { userDocConfig } from './doc/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
