@@ -28,14 +28,14 @@ export class UrlInMemoryRepository implements UrlRepositoryInterface {
     this.urls.push(url);
   }
 
-  public async list(_input: ListInput): Promise<ListOutput> {
+  public async list(input: ListInput): Promise<ListOutput> {
     return {
       rows: this.urls,
       count: this.urls.length,
       totalPages: 1,
-      page: 1,
+      page: input.page,
       sort: Sort.DESC,
-      pageSize: 1,
+      pageSize: input.pageSize,
     };
   }
 

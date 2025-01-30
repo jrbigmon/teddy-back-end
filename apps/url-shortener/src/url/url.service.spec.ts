@@ -1,5 +1,7 @@
 import { Url } from './domain/url.entity';
 import { UrlDeleteInputDTO } from './dto/url-delete.dto';
+import { UrlGetInputDTO } from './dto/url-get-dto';
+import { UrlListInputDTO } from './dto/url-list.dto';
 import { UrlShortenerInputDTO } from './dto/url-shortener.dto';
 import { UrlUpdateInputDTO } from './dto/url-update.dto';
 import { UrlInMemoryRepository } from './repository/url-in-memory.repository';
@@ -243,6 +245,178 @@ describe('UrlService unit tests', () => {
       };
 
       await expect(urlService.delete(input)).rejects.toThrow('Unauthorized');
+    });
+  });
+
+  describe('list', () => {
+    it('should be return a list of urls with count successfully', async () => {
+      const url1 = new Url({
+        id: '1',
+        originalUrl: 'https://ola.mundo.com',
+        shortUrl: Url.generateShortUrl('https://ola.mundo.com', serverUrl),
+        userId: 'testUserId',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      const url2 = new Url({
+        id: '2',
+        originalUrl: 'https://ola.mundo2.com',
+        shortUrl: Url.generateShortUrl('https://ola.mundo2.com', serverUrl),
+        userId: 'testUserId',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      url1.click();
+      url1.click();
+
+      await repository.save(url1);
+
+      await repository.save(url2);
+
+      const input: UrlListInputDTO = {
+        userId: 'testUserId',
+        page: 0,
+        pageSize: 10,
+        baseUrl: serverUrl,
+      };
+
+      const output = await urlService.list(input);
+
+      expect(output).toMatchObject({
+        count: 2,
+        totalPages: 1,
+        page: 0,
+        pageSize: 10,
+        sort: 'DESC',
+        _nextPage: expect.any(String),
+        _prevPage: null,
+        data: [
+          {
+            id: '1',
+            originalUrl: url1.getOriginalUrl(),
+            shortUrl: url1.getShortUrl(),
+            clickCount: 2,
+            createdAt: url1.getCreatedAt(),
+            updatedAt: url1.getUpdatedAt(),
+            _infoPage: `${serverUrl}/${url1.getId()}`,
+          },
+          {
+            id: '2',
+            originalUrl: url2.getOriginalUrl(),
+            shortUrl: url2.getShortUrl(),
+            clickCount: 0,
+            createdAt: url2.getCreatedAt(),
+            updatedAt: url2.getUpdatedAt(),
+            _infoPage: `${serverUrl}/${url2.getId()}`,
+          },
+        ],
+      });
+    });
+
+    it('should be return a list of urls without count successfully', async () => {
+      const url1 = new Url({
+        id: '1',
+        originalUrl: 'https://ola.mundo.com',
+        shortUrl: Url.generateShortUrl('https://ola.mundo.com', serverUrl),
+        userId: 'testUserId',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      const url2 = new Url({
+        id: '2',
+        originalUrl: 'https://ola.mundo2.com',
+        shortUrl: Url.generateShortUrl('https://ola.mundo2.com', serverUrl),
+        userId: 'testUserId',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      url1.click();
+      url1.click();
+
+      await repository.save(url1);
+
+      await repository.save(url2);
+
+      const input: UrlListInputDTO = {
+        userId: null,
+        page: 0,
+        pageSize: 10,
+        baseUrl: serverUrl,
+      };
+
+      const output = await urlService.list(input);
+
+      expect(output).toMatchObject({
+        count: 2,
+        totalPages: 1,
+        page: 0,
+        pageSize: 10,
+        sort: 'DESC',
+        _nextPage: expect.any(String),
+        _prevPage: null,
+        data: [
+          {
+            id: '1',
+            originalUrl: url1.getOriginalUrl(),
+            shortUrl: url1.getShortUrl(),
+            clickCount: null,
+            createdAt: url1.getCreatedAt(),
+            updatedAt: url1.getUpdatedAt(),
+            _infoPage: `${serverUrl}/${url1.getId()}`,
+          },
+          {
+            id: '2',
+            originalUrl: url2.getOriginalUrl(),
+            shortUrl: url2.getShortUrl(),
+            clickCount: null,
+            createdAt: url2.getCreatedAt(),
+            updatedAt: url2.getUpdatedAt(),
+            _infoPage: `${serverUrl}/${url2.getId()}`,
+          },
+        ],
+      });
+    });
+  });
+
+  describe('get', () => {
+    it('should be return a url successfully', async () => {
+      const url = new Url({
+        id: '1',
+        originalUrl: 'https://ola.mundo.com',
+        shortUrl: Url.generateShortUrl('https://ola.mundo.com', serverUrl),
+        userId: 'testUserId',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      url.click();
+
+      await repository.save(url);
+
+      const input: UrlGetInputDTO = {
+        id: '1',
+        userId: 'testUserId',
+      };
+
+      const output = await urlService.get(input);
+
+      expect(output).toMatchObject({
+        id: '1',
+        originalUrl: url.getOriginalUrl(),
+        shortUrl: url.getShortUrl(),
+        clickCount: 1,
+        createdAt: url.getCreatedAt(),
+        updatedAt: url.getUpdatedAt(),
+      });
     });
   });
 });

@@ -93,6 +93,8 @@ export class Url implements Entity {
     const click = Click.create({ urlId: this.getId(), userId: userId });
 
     this.clicks.push(click);
+
+    this.updateClickCount();
   }
 
   public getId(): string {
@@ -130,6 +132,10 @@ export class Url implements Entity {
 
   public setClickCount(value: number): void {
     this.clickCount = value;
+  }
+
+  public updateClickCount(): void {
+    this.clickCount = this.clicks.length;
   }
 
   public getCreatedAt(): Date | undefined {
