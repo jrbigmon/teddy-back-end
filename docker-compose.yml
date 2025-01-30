@@ -28,6 +28,7 @@ services:
       - url_shortener_db_data:/var/lib/postgresql/data
     networks:
       - app_network
+    # entrypoint: [ "sh", "-c", "yarn migrate:url && yarn start" ]
 
   redis:
     image: redis:7
@@ -61,6 +62,7 @@ services:
       - redis
     networks:
       - app_network
+    entrypoint: [ "sh", "-c", "yarn migrate:auth && yarn start auth" ]
 
   url_shortener_service:
     build:

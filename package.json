@@ -17,7 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./apps/url-shortener/test/jest-e2e.json"
+    "test:e2e": "jest --config ./apps/url-shortener/test/jest-e2e.json",
+    "migrate:auth": "npx sequelize-cli db:migrate --config apps/auth/src/database/config/config.js --migrations-path apps/auth/src/database/migrations",
+    "migrate:url": "npx sequelize-cli db:migrate --config apps/url-shortener/src/database/config/config.js --migrations-path apps/url-shortener/src/database/migrations"
   },
   "dependencies": {
     "@nestjs/bull": "^11.0.1",
@@ -30,6 +32,7 @@
     "@nestjs/swagger": "^11.0.3",
     "argon2": "^0.41.1",
     "bull": "^4.16.5",
+    "dotenv": "^16.4.7",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
