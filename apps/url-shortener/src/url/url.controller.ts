@@ -14,7 +14,10 @@ import {
 } from '@nestjs/common';
 import { UrlService } from './url.service';
 import { Request, Response } from 'express';
-import { UrlShortenerInputDTO } from './dto/url-shortener.dto';
+import {
+  UrlShortenerInputDTO,
+  UrlShortenerOutputDTO,
+} from './dto/url-shortener.dto';
 import { getBaseUrl } from '../utils/getBaseUrl';
 import { handleException } from '../../../@share/exceptions/handle.exception';
 import { Sequelize } from 'sequelize-typescript';
@@ -22,7 +25,19 @@ import { Sort } from '../../../@share/enums/sort.enum';
 import { AuthGuard } from '../../../@share/auth-guard/auth-guard';
 import { getDecodedUser } from '../../../@share/utils/getDecodedUser';
 import { DecodeJwt } from '../../../@share/auth-guard/decode-jwt';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+import { UrlUpdateInputDTO, UrlUpdateOutputDTO } from './dto/url-update.dto';
+import { UrlListInputDTO, UrlListOutputDTO } from './dto/url-list.dto';
+import { UrlGetOutputDTO } from './dto/url-get-dto';
 
+@ApiTags('Urls')
 @Controller('api/urls')
 export class UrlController {
   constructor(
@@ -31,9 +46,14 @@ export class UrlController {
   ) {}
 
   @Post('shorten')
+  @ApiCreatedResponse({
+    description: 'New URL has been shortened.',
+    type: UrlShortenerOutputDTO,
+  })
+  @ApiBearerAuth()
   @UseGuards(DecodeJwt)
   public async urlShortener(
-    @Body() body: Pick<UrlShortenerInputDTO, 'url'>,
+    @Body() body: UrlShortenerInputDTO,
     @Res() response: Response,
     @Req() request: Request,
   ) {
@@ -62,10 +82,20 @@ export class UrlController {
   }
 
   @Put(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the URL to be updated.',
+    type: String,
+  })
+  @ApiOkResponse({
+    description: 'New URL has been updated.',
+    type: UrlUpdateOutputDTO,
+  })
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, DecodeJwt)
   public async update(
     @Param('id') id: string,
-    @Body() body: Pick<UrlShortenerInputDTO, 'url'>,
+    @Body() body: UrlUpdateInputDTO,
     @Res() response: Response,
     @Req() request: Request,
   ) {
@@ -95,6 +125,15 @@ export class UrlController {
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the URL to be deleted.',
+    type: String,
+  })
+  @ApiNoContentResponse({
+    description: 'URL has been deleted.',
+  })
+  @ApiBearerAuth()
   @UseGuards(AuthGuard, DecodeJwt)
   public async delete(
     @Param('id') id: string,
@@ -116,7 +155,7 @@ export class UrlController {
 
       await transaction.commit();
 
-      return response.status(HttpStatus.OK).json(result);
+      return response.status(HttpStatus.NO_CONTENT).json(result);
     } catch (error) {
       await transaction.rollback();
 
@@ -125,18 +164,24 @@ export class UrlController {
   }
 
   @Get()
+  @ApiOkResponse({
+    description: 'A list of urls has been returned',
+    type: UrlListOutputDTO,
+  })
+  @ApiBearerAuth()
   @UseGuards(DecodeJwt)
   public async list(
-    @Query() query: { page?: number; pageSize?: number; sort?: Sort },
+    @Query() query: UrlListInputDTO,
     @Res() response: Response,
     @Req() request: Request,
   ) {
-    const { page, pageSize } = query;
+    const { page, pageSize, sort } = query;
     try {
       const userDecoded = getDecodedUser(request);
 
       const result = await this.service.list({
         userId: userDecoded?.id ?? null,
+        sort,
         page,
         pageSize,
         baseUrl: `${getBaseUrl(request)}/api/urls`,
@@ -149,6 +194,16 @@ export class UrlController {
   }
 
   @Get(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the URL to be found.',
+    type: String,
+  })
+  @ApiOkResponse({
+    description: 'A URL has been returned',
+    type: UrlGetOutputDTO,
+  })
+  @ApiBearerAuth()
   @UseGuards(DecodeJwt)
   public async get(
     @Param('id') id: string,

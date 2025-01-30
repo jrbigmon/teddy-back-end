@@ -14,6 +14,7 @@ import { getBaseUrl } from '../utils/getBaseUrl';
 import { Request, Response } from 'express';
 import { DecodeJwt } from '../../../@share/auth-guard/decode-jwt';
 import { getDecodedUser } from '../../../@share/utils/getDecodedUser';
+import { ApiBearerAuth, ApiPermanentRedirectResponse } from '@nestjs/swagger';
 
 @Controller()
 export class ClickController {
@@ -23,6 +24,10 @@ export class ClickController {
   ) {}
 
   @Get(':id')
+  @ApiBearerAuth()
+  @ApiPermanentRedirectResponse({
+    description: 'Redirect to the original URL.',
+  })
   @UseGuards(DecodeJwt)
   public async clicking(
     @Param('id') id: string,
@@ -44,7 +49,9 @@ export class ClickController {
 
       await transaction.commit();
 
-      return response.status(HttpStatus.OK).redirect(result.originalUrl);
+      return response
+        .status(HttpStatus.PERMANENT_REDIRECT)
+        .redirect(result.originalUrl);
     } catch (error) {
       await transaction.rollback();
 
