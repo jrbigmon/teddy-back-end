@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  settings_db:
+  auth_db:
     image: postgres:15
     container_name: auth_db
     environment:
@@ -11,11 +11,11 @@ services:
     ports:
       - "${AUTH_DATABASE_PORT}:${AUTH_DATABASE_PORT}"
     volumes:
-      - settings_db_data:/var/lib/postgresql/data
+      - auth_db_data:/var/lib/postgresql/data
     networks:
       - app_network
 
-  orders_db:
+  url_shortener_db:
     image: postgres:15
     container_name: url_shortener_db
     environment:
@@ -23,19 +23,30 @@ services:
       POSTGRES_PASSWORD: ${URL_SHORTENER_DATABASE_PASSWORD}
       POSTGRES_DB: ${URL_SHORTENER_DATABASE_NAME}
     ports:
-      - "{URL_SHORTENER_DATABASE_PORT}:${URL_SHORTENER_DATABASE_PORT}"
+      - "5433:${URL_SHORTENER_DATABASE_PORT}"
     volumes:
-      - orders_db_data:/var/lib/postgresql/data
+      - url_shortener_db_data:/var/lib/postgresql/data
     networks:
       - app_network
 
-  settings_service:
+  redis:
+    image: redis:7
+    container_name: redis_service
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    networks:
+      - app_network
+
+  auth_service:
     build:
       context: .
       dockerfile: ./apps/auth/dockerfile
     container_name: auth_service
     ports:
-      - ${AUTH_PORT}:${AUTH_PORT}
+      - "${AUTH_PORT}:${AUTH_PORT}"
     environment:
       AUTH_DATABASE_HOST: ${AUTH_DATABASE_HOST}
       AUTH_DATABASE_USER: ${AUTH_DATABASE_USER}
@@ -43,18 +54,21 @@ services:
       AUTH_DATABASE_NAME: ${AUTH_DATABASE_NAME}
       AUTH_DATABASE_PORT: ${AUTH_DATABASE_PORT}
       AUTH_DATABASE_EMAIL: ${AUTH_DATABASE_EMAIL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     depends_on:
       - auth_db
+      - redis
     networks:
       - app_network
 
-  orders_service:
+  url_shortener_service:
     build:
       context: .
       dockerfile: ./apps/url-shortener/dockerfile
     container_name: url_shortener_service
     ports:
-      - ${URL_SHORTENER_PORT}:${URL_SHORTENER_PORT}
+      - "${URL_SHORTENER_PORT}:${URL_SHORTENER_PORT}"
     environment:
       URL_SHORTENER_DATABASE_HOST: ${URL_SHORTENER_DATABASE_HOST}
       URL_SHORTENER_DATABASE_USER: ${URL_SHORTENER_DATABASE_USER}
@@ -62,8 +76,11 @@ services:
       URL_SHORTENER_DATABASE_NAME: ${URL_SHORTENER_DATABASE_NAME}
       URL_SHORTENER_DATABASE_PORT: ${URL_SHORTENER_DATABASE_PORT}
       URL_SHORTENER_DATABASE_EMAIL: ${URL_SHORTENER_DATABASE_EMAIL}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     depends_on:
       - url_shortener_db
+      - redis
     networks:
       - app_network
 
@@ -72,5 +89,5 @@ networks:
     driver: bridge
 
 volumes:
-  auth_db:
-  url_shortener_db:
+  auth_db_data:
+  url_shortener_db_data:

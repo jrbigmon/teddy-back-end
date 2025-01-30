@@ -1,23 +1,23 @@
-import { hash, compare } from 'bcrypt';
+const argon2 = require('argon2');
 import { InvalidDataException } from '../../../@share/exceptions/invalid-data.expcetion';
 
 export async function encryptPassword(password: string): Promise<string> {
   const salt = 10;
 
   try {
-    return hash(password, salt);
+    return await argon2.hash(password);
   } catch (error) {
     console.error(error);
     throw new InvalidDataException('Incorrect password data to encrypt');
   }
 }
 
-export function comparePassword(
+export async function comparePassword(
   password: string,
   hash: string,
 ): Promise<boolean> {
   try {
-    return compare(password, hash);
+    return (await argon2.verify(hash, password)) as Promise<boolean>;
   } catch (error) {
     throw new InvalidDataException('Incorrect password on compare');
   }
