@@ -4,8 +4,9 @@ import { ConfigModule } from '@nestjs/config';
 import { Dialect } from 'sequelize';
 import UrlModel from '../url/model/urls.model';
 import ClickModel from '../url/model/clicks.model';
+import UserModel from '../users/model/users.model';
 
-export const models = [UrlModel, ClickModel];
+export const models = [UrlModel, ClickModel, UserModel];
 export const modelsModule = SequelizeModule.forFeature(models);
 
 const isTestEnvironment = process.env.NODE_ENV === 'test';
