@@ -1,9 +1,19 @@
 import { Sequelize } from 'sequelize-typescript';
 import { UrlService } from './url.service';
-import { Controller, Get, Param, Req, Res, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Req,
+  Res,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
 import { handleException } from '../../../@share/exceptions/handle.exception';
 import { getBaseUrl } from '../utils/getBaseUrl';
 import { Request, Response } from 'express';
+import { DecodeJwt } from '../../../@share/auth-guard/decode-jwt';
+import { getDecodedUser } from '../../../@share/utils/getDecodedUser';
 
 @Controller()
 export class ClickController {
@@ -13,6 +23,7 @@ export class ClickController {
   ) {}
 
   @Get(':id')
+  @UseGuards(DecodeJwt)
   public async clicking(
     @Param('id') id: string,
     @Req() request: Request,
@@ -21,12 +32,12 @@ export class ClickController {
     const transaction = await this.sequelize.transaction();
 
     try {
-      const { userId } = { userId: '123' };
+      const userDecoded = getDecodedUser(request);
 
       const result = await this.service.clicking(
         {
           shortUrl: `${getBaseUrl(request)}/${id}`,
-          userId,
+          userId: userDecoded?.id ?? null,
         },
         transaction,
       );
