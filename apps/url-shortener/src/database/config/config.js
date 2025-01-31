@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 module.exports = {
-  development: {
+  demo: {
     username: process.env.URL_SHORTENER_DATABASE_USER,
     password: process.env.URL_SHORTENER_DATABASE_PASSWORD,
     database: process.env.URL_SHORTENER_DATABASE_NAME,

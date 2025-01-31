@@ -7,20 +7,20 @@ import { Dialect } from 'sequelize';
 export const models = [UserModel];
 export const modelsModule = SequelizeModule.forFeature(models);
 
-const isTestEnvironment = process.env.NODE_ENV === 'test';
+const isDevelopmentEnvironment = process.env.NODE_ENV === 'development';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     SequelizeModule.forRoot({
-      dialect: process.env.AUTH_DATABASE_NAME as Dialect,
+      dialect: process.env.AUTH_DATABASE_DIALECT as Dialect,
       host: process.env.AUTH_DATABASE_HOST,
       port: Number(process.env.AUTH_DATABASE_PORT),
       username: process.env.AUTH_DATABASE_USER,
       password: process.env.AUTH_DATABASE_PASSWORD,
       database: process.env.AUTH_DATABASE_NAME,
-      autoLoadModels: isTestEnvironment,
-      synchronize: isTestEnvironment,
+      autoLoadModels: isDevelopmentEnvironment,
+      synchronize: isDevelopmentEnvironment,
       models,
       logging: false,
     }),
