@@ -20,121 +20,214 @@ As seguintes regras para a utilização são as seguintes:
 |                      |                                |
 
 ## Requisitos
-Rodar com docker
+Com docker
 - Docker 
 - Docker compose
 
 Local
 - Node >=18.17.0v <=23.6.0v
-- Redis
-- Postgres (servidor local)
+- Redis (localhost)
 
 
 ## Variáveis de Ambiente
 
-Para rodar esse projeto, você vai precisar adicionar as seguintes variáveis de ambiente no seu .env
+Para rodar esse projeto, você vai precisar adicionar as seguintes variáveis de ambiente no seu .env.
 
-Pode usar o `.env.sample` para se orientar em relação a quais variáveis são usadas.
+Você pode escolher usar ambiente de demonstração (`demo`) ou desenvolvimento (`development`).
 
-```bash
-# ENV
-NODE_ENV=development
+Oriente-se pelo `.env.sample` caso necessário.
 
-# AUTH DATABASE
-AUTH_DATABASE_HOST=auth_db
-AUTH_DATABASE_PORT=5432
-AUTH_DATABASE_USER=auth_user
-AUTH_DATABASE_PASSWORD=password
-AUTH_DATABASE_NAME=auth
-AUTH_DATABASE_DIALECT=postgres
-AUTH_DATABASE_EMAIL=user@localhost.com
+- Demonstração
+  ```bash
+  # ENV
+  NODE_ENV=demo
 
-# URL SHORTENER DATABASE
-URL_SHORTENER_DATABASE_HOST=url_shortener_db
-URL_SHORTENER_DATABASE_PORT=5432
-URL_SHORTENER_DATABASE_USER=url_shortener_user
-URL_SHORTENER_DATABASE_PASSWORD=password
-URL_SHORTENER_DATABASE_NAME=url_shortener
-URL_SHORTENER_DATABASE_DIALECT=postgres
-URL_SHORTENER_DATABASE_EMAIL=user@localhost.com
+  # AUTH DATABASE
+  AUTH_DATABASE_HOST=auth_db
+  AUTH_DATABASE_PORT=5432
+  AUTH_DATABASE_USER=auth_user
+  AUTH_DATABASE_PASSWORD=password
+  AUTH_DATABASE_NAME=auth
+  AUTH_DATABASE_DIALECT=postgres
+  AUTH_DATABASE_EMAIL=user@localhost.com
 
-# SECRETS
-JWT_SECRET=JRBIGMON
+  # URL SHORTENER DATABASE
+  URL_SHORTENER_DATABASE_HOST=url_shortener_db
+  URL_SHORTENER_DATABASE_PORT=5432
+  URL_SHORTENER_DATABASE_USER=url_shortener_user
+  URL_SHORTENER_DATABASE_PASSWORD=password
+  URL_SHORTENER_DATABASE_NAME=url_shortener
+  URL_SHORTENER_DATABASE_DIALECT=postgres
+  URL_SHORTENER_DATABASE_EMAIL=user@localhost.com
 
-# REDIS
-REDIS_HOST=redis_service
-REDIS_PORT=6379
+  # SECRETS
+  JWT_SECRET=JRBIGMON
 
-# SERVICES
-AUTH_PORT=3001
-URL_SHORTENER_PORT=3000
-```
+  # REDIS
+  REDIS_HOST=redis_service
+  REDIS_PORT=6379
+
+  # SERVICES
+  AUTH_PORT=3001
+  URL_SHORTENER_PORT=3000
+  ```
+
+- Desenvolvimento
+  ```bash
+  # ENV
+  NODE_ENV=development
+
+  # AUTH DATABASE
+  AUTH_DATABASE_HOST=:memory:
+  AUTH_DATABASE_PORT=
+  AUTH_DATABASE_USER=
+  AUTH_DATABASE_PASSWORD=
+  AUTH_DATABASE_NAME=auth
+  AUTH_DATABASE_DIALECT=sqlite
+  AUTH_DATABASE_EMAIL=
+
+  # URL SHORTENER DATABASE
+  URL_SHORTENER_DATABASE_HOST=:memory:
+  URL_SHORTENER_DATABASE_PORT=
+  URL_SHORTENER_DATABASE_USER=
+  URL_SHORTENER_DATABASE_PASSWORD=
+  URL_SHORTENER_DATABASE_NAME=url_shortener
+  URL_SHORTENER_DATABASE_DIALECT=sqlite
+  URL_SHORTENER_DATABASE_EMAIL=
+
+  # SECRETS
+  JWT_SECRET=JRBIGMON
+
+  # REDIS
+  REDIS_HOST=localhost
+  REDIS_PORT=6379
+
+  # SERVICES
+  AUTH_PORT=3001
+  URL_SHORTENER_PORT=3000
+  ```
+
+
+
 ## Clonar e rodar
 
-Como clonar e rodar o projeto usando docker compose
+- Clonar
 
-```bash
-git clone git@github.com:jrbigmon/teddy-back-end.git
-```
+  ```bash
+  git clone git@github.com:jrbigmon/teddy-back-end.git
+  ```
 
-```bash
-cd teddy-back-end
-```
 
-```bash
-cat > .env <<EOF
-# ENV
-NODE_ENV=development
 
-# AUTH DATABASE
-AUTH_DATABASE_HOST=auth_db
-AUTH_DATABASE_PORT=5432
-AUTH_DATABASE_USER=auth_user
-AUTH_DATABASE_PASSWORD=password
-AUTH_DATABASE_NAME=auth
-AUTH_DATABASE_DIALECT=postgres
-AUTH_DATABASE_EMAIL=user@localhost.com
+### Rodar usando docker compose
 
-# URL SHORTENER DATABASE
-URL_SHORTENER_DATABASE_HOST=url_shortener_db
-URL_SHORTENER_DATABASE_PORT=5432
-URL_SHORTENER_DATABASE_USER=url_shortener_user
-URL_SHORTENER_DATABASE_PASSWORD=password
-URL_SHORTENER_DATABASE_NAME=url_shortener
-URL_SHORTENER_DATABASE_DIALECT=postgres
-URL_SHORTENER_DATABASE_EMAIL=user@localhost.com
+- Acessar o repositório
+  ```bash
+  cd teddy-back-end
+  ```
 
-# SECRETS
-JWT_SECRET=JRBIGMON
+- Criar o arquivo `.env` e colar as variáveis de ambiente.
+  ```bash
+  cat > .env <<EOF
+  # ENV
+  NODE_ENV=demo
 
-# REDIS
-REDIS_HOST=redis_service
-REDIS_PORT=6379
+  # AUTH DATABASE
+  AUTH_DATABASE_HOST=auth_db
+  AUTH_DATABASE_PORT=5432
+  AUTH_DATABASE_USER=auth_user
+  AUTH_DATABASE_PASSWORD=password
+  AUTH_DATABASE_NAME=auth
+  AUTH_DATABASE_DIALECT=postgres
+  AUTH_DATABASE_EMAIL=user@localhost.com
 
-# SERVICES
-AUTH_PORT=3001
-URL_SHORTENER_PORT=3000
-EOF
-```
+  # URL SHORTENER DATABASE
+  URL_SHORTENER_DATABASE_HOST=url_shortener_db
+  URL_SHORTENER_DATABASE_PORT=5432
+  URL_SHORTENER_DATABASE_USER=url_shortener_user
+  URL_SHORTENER_DATABASE_PASSWORD=password
+  URL_SHORTENER_DATABASE_NAME=url_shortener
+  URL_SHORTENER_DATABASE_DIALECT=postgres
+  URL_SHORTENER_DATABASE_EMAIL=user@localhost.com
 
-```bash
-docker compose up --build
-```
+  # SECRETS
+  JWT_SECRET=JRBIGMON
 
+  # REDIS
+  REDIS_HOST=redis_service
+  REDIS_PORT=6379
+
+  # SERVICES
+  AUTH_PORT=3001
+  URL_SHORTENER_PORT=3000
+  EOF
+  ```
+
+- Iniciar o projeto com docker compose
+  ```bash
+  docker compose up --build
+  ```
+
+### Rodar localmente
+
+- Acessar o repositório
+  ```bash
+  cd teddy-back-end
+  ```
+
+- Instalar as dependências
+  ```bash
+  yarn install
+  ```
+
+- Criar o arquivo `.env` e colar as variáveis de ambiente.
+  ```bash
+  cat > .env <<EOF
+  # ENV
+  NODE_ENV=development
+
+  # AUTH DATABASE
+  AUTH_DATABASE_HOST=:memory:
+  AUTH_DATABASE_PORT=
+  AUTH_DATABASE_USER=
+  AUTH_DATABASE_PASSWORD=
+  AUTH_DATABASE_NAME=auth
+  AUTH_DATABASE_DIALECT=sqlite
+  AUTH_DATABASE_EMAIL=
+
+  # URL SHORTENER DATABASE
+  URL_SHORTENER_DATABASE_HOST=:memory:
+  URL_SHORTENER_DATABASE_PORT=
+  URL_SHORTENER_DATABASE_USER=
+  URL_SHORTENER_DATABASE_PASSWORD=
+  URL_SHORTENER_DATABASE_NAME=url_shortener
+  URL_SHORTENER_DATABASE_DIALECT=sqlite
+  URL_SHORTENER_DATABASE_EMAIL=
+
+  # SECRETS
+  JWT_SECRET=JRBIGMON
+
+  # REDIS
+  REDIS_HOST=localhost
+  REDIS_PORT=6379
+
+  # SERVICES
+  AUTH_PORT=3001
+  URL_SHORTENER_PORT=3000
+  EOF
+  ```
 
 ## Documentação da API
 
-#### Auth Open API Swagger
+- Auth Open API Swagger
+  ```http
+  GET http://localhost:3001/api
+  ```
 
-```http
-GET http://localhost:3001/api
-```
-
-#### Url shortener Open API Swagger
-
-```http
-GET http://localhost:3000/api
-```
+- Url shortener Open API Swagger
+  ```http
+  GET http://localhost:3000/api
+  ```
 
 
 
