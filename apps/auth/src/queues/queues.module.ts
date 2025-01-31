@@ -2,9 +2,11 @@ import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { USERS_QUEUE } from '../../../@share/constants/redis.queues';
 import { UserQueueProducer } from './users/users.queue.producer';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST || 'localhost',

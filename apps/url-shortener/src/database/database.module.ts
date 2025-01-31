@@ -9,8 +9,6 @@ import UserModel from '../users/model/users.model';
 export const models = [UrlModel, ClickModel, UserModel];
 export const modelsModule = SequelizeModule.forFeature(models);
 
-const isDevelopmentEnvironment = process.env.NODE_ENV === 'development';
-
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -21,10 +19,10 @@ const isDevelopmentEnvironment = process.env.NODE_ENV === 'development';
       username: process.env.URL_SHORTENER_DATABASE_USER,
       password: process.env.URL_SHORTENER_DATABASE_PASSWORD,
       database: process.env.URL_SHORTENER_DATABASE_NAME,
-      autoLoadModels: isDevelopmentEnvironment,
-      synchronize: isDevelopmentEnvironment,
+      autoLoadModels: process.env.NODE_ENV === 'development',
+      synchronize: process.env.NODE_ENV === 'development',
       models,
-      logging: false,
+      logging: process.env.NODE_ENV === 'development',
     }),
   ],
 })

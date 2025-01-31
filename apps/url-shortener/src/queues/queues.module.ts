@@ -3,9 +3,11 @@ import { Module } from '@nestjs/common';
 import { USERS_QUEUE } from '../../../@share/constants/redis.queues';
 import { UserQueueConsumer } from './users/users.queue.consumer';
 import { UserModule } from '../users/users.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     UserModule,
     BullModule.forRoot({
       redis: {
