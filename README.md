@@ -6,7 +6,7 @@
 Essa API tem como objetivo encutar URLs fornecidas, contabilizar os clicks realizados e redirecionar os usuarios para a rota original.
 
 As seguintes regras para a utilização são as seguintes:
-- Qualquer usuário pode encutar uma URL, porém se não estiver devidamente autenticado, não poderá remove-la, edita-la ou visualizar a contagem de clicks realizados.
+- Qualquer usuário pode encutar uma URL, porém se não estiver devidamente autenticado e a mesma não pertencer a ele, não poderá remove-la, edita-la ou visualizar a contagem de clicks realizados.
 - Qualquer usuário pode listar todas as URLs criadas.
 - Qualquer usuário pode buscar uma URL pelo ID, porém os clicks só serão apresentados valores diferentes de nullo se estiver devidamente autenticado.
 - Quando autenticado é listado apenas as URLs que pertençam ao usuário.
