@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 
 export class UrlUpdateInputDTO {
   id: string;
 
   @ApiProperty({ type: String })
+  @IsNotEmpty({ message: 'Url is required' })
   url: string;
 
   userId: string;

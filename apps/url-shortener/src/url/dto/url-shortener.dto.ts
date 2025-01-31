@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 
 export class UrlShortenerInputDTO {
   @ApiProperty({ type: String })
+  @IsNotEmpty({ message: 'Url is required' })
   url: string;
 
   serverUrl: string;
