@@ -14,10 +14,10 @@ As seguintes regras para a utilização são as seguintes:
 
 ## Compatibilidade de versão Node
 
-| Node Version  | Link |
-| :---------- | | :----|
-| `>=18.17.0 <=23.6.0` | https://nodejs.org/en/download|
-
+| Node Version         | Link                           |
+| :------------------- | :----------------------------- |
+| `>=18.17.0 <=23.6.0` | https://nodejs.org/en/download |
+|                      |                                |
 
 ## Requisitos
 Rodar com docker
