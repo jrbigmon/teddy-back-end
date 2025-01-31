@@ -66,15 +66,15 @@ export class User implements Entity {
       throw new InvalidDataException('Id is required');
     }
 
-    if (!this.name) {
+    if (!this.name?.trim()) {
       throw new InvalidDataException('Name is required');
     }
 
-    if (!this.email) {
+    if (!this.email?.trim()) {
       throw new InvalidDataException('Email is required');
     }
 
-    if (!this.password) {
+    if (!this.password?.trim()) {
       throw new InvalidDataException('Password is required');
     }
   }

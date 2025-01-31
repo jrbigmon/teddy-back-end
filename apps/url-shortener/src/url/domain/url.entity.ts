@@ -76,11 +76,11 @@ export class Url implements Entity {
       throw new InvalidDataException('Id is required');
     }
 
-    if (!this.originalUrl) {
+    if (!this.originalUrl?.trim()) {
       throw new InvalidDataException('Original URL is required');
     }
 
-    if (!this.shortUrl) {
+    if (!this.shortUrl?.trim()) {
       throw new InvalidDataException('Short URL is required');
     }
   }
