@@ -11,7 +11,11 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AuthModule);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
 
   documentFactory(app, [userDocConfig]);
 
