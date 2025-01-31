@@ -15,7 +15,7 @@ const isTestEnvironment = process.env.NODE_ENV === 'test';
   imports: [
     ConfigModule.forRoot(),
     SequelizeModule.forRoot({
-      dialect: 'postgres',
+      dialect: process.env.URL_SHORTENER_DATABASE_DIALECT as Dialect,
       host: process.env.URL_SHORTENER_DATABASE_HOST,
       port: Number(process.env.URL_SHORTENER_DATABASE_PORT),
       username: process.env.URL_SHORTENER_DATABASE_USER,
