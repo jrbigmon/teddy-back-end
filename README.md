@@ -229,6 +229,11 @@ Oriente-se pelo `.env.sample` caso necessário.
   GET http://localhost:3000/api
   ```
 
+## Melhorias para escalar horizontalmente
+- Adicionar caching nas rotas de busca de URLs.
+- Utilizar filas para persistência das URLs no banco de dados, evitando problemas de indisponibilidade do banco não criar a URL, suportando mais requisições.
+  - Prós: Resiliência ao persistir os dados; Suportar mais requisições simultâneas sem delay da persistência do banco de dados, já que persistir em memória é mais rápido do que em disco.
+  - Contras: Delay entre a persistência dos dados e a consulta do mesmo, caso venha ter consultas simultâneas a criação.
 
 
 ## Referências
