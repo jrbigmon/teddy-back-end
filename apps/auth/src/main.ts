@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AuthModule } from './auth.module';
 import { documentFactory } from '../../@share/doc/document.factory';
 import { userDocConfig } from './doc/swagger';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const logger = new Logger('MAIN');
@@ -10,6 +10,8 @@ async function bootstrap() {
   const port = Number(process.env.AUTH_PORT || 3001);
 
   const app = await NestFactory.create(AuthModule);
+
+  app.useGlobalPipes(new ValidationPipe());
 
   documentFactory(app, [userDocConfig]);
 
