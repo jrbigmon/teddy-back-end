@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { genUUID } from '../../../../@share/utils/genUUID';
 import { Entity } from '../../../../@share/entity/entity';
 import { Click } from './clicks.entity';
+import { InvalidDataException } from '../../../../@share/exceptions/invalid-data.expcetion';
 
 export interface InputConstructor {
   id: string;
@@ -72,15 +73,15 @@ export class Url implements Entity {
 
   public isValid() {
     if (!this.id) {
-      throw new Error('Id is required');
+      throw new InvalidDataException('Id is required');
     }
 
     if (!this.originalUrl) {
-      throw new Error('Original URL is required');
+      throw new InvalidDataException('Original URL is required');
     }
 
     if (!this.shortUrl) {
-      throw new Error('Short URL is required');
+      throw new InvalidDataException('Short URL is required');
     }
   }
 

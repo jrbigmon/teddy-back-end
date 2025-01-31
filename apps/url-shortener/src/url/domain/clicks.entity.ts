@@ -1,4 +1,5 @@
 import { Entity } from '../../../../@share/entity/entity';
+import { InvalidDataException } from '../../../../@share/exceptions/invalid-data.expcetion';
 import { genUUID } from '../../../../@share/utils/genUUID';
 
 export interface InputConstructor {
@@ -58,11 +59,11 @@ export class Click implements Entity {
 
   isValid(): void {
     if (!this.id) {
-      throw new Error('Id is required');
+      throw new InvalidDataException('Id is required');
     }
 
     if (!this.urlId) {
-      throw new Error('Url ID is required');
+      throw new InvalidDataException('Url ID is required');
     }
   }
 
