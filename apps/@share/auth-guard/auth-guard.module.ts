@@ -5,8 +5,8 @@ import { JwtGuardService } from './jwt.guard.service';
 import { AuthGuard } from './auth-guard';
 import { DecodeJwt } from './decode-jwt';
 
-const isTestEnvironment = process.env.NODE_ENV === 'test';
-const secretTest = isTestEnvironment ? JWT_SECRET_TEST : null;
+const isDevelopmentEnvironment = process.env.NODE_ENV === 'development';
+const secretTest = isDevelopmentEnvironment ? JWT_SECRET_TEST : null;
 
 const services: Provider[] = [JwtGuardService, AuthGuard, DecodeJwt];
 
